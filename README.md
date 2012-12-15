@@ -1,1 +1,1 @@
-Back up of the rbot plugins that I barely keep out of abeyance.
+Changes made to keep rbot plugins functional with regards to api and ruby version changes.
