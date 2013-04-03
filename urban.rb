@@ -19,17 +19,17 @@ class UrbanPlugin < Plugin
     s = @bot.httputil.get(u)
     return m.reply("Couldn't get the urban dictionary definition for #{word}") if s.nil?
 
-    notfound = s.match %r{<i>.*?</i> isn't defined}
+    notfound = s.match %r{<i>.*?</i> isnt defined}
 
     numpages = if s[%r{<div id='paginator'>.*?</div>}m]
       $&.scan(/\d+/).collect {|x| x.to_i}.max || 1
     else 1 end
 
     rv = Array.new
-    s.scan(%r{<td class='index'[^>]*>.*?(\d+)\..*?</td>.*?<td class='word'>(?:<a.*?>)?([^>]+)(?:</a>)?</td>.*?<div class="definition">(.+?)</div>.*?<div class="example">(.+?)</div>}m) do |num, wrd, desc, ex|
+    s.tr_s("\n","").scan(%r{<td class='index'[^>]*>.*?(\d+)\..*?</td>.*?<td class='word'>(?:<.*?>)?([^>]+)(?:</.*?>)?</td>.*?<div class="definition">(.+?)</div>.*?<div class="example">(.+?)</div>}m) do |num, wrd, desc, ex|
       rv << [num.to_i, wrd.strip, desc.strip, ex.strip]
     end
-
+    debug rv.inspect
     maxnum = rv.collect {|x| x[0]}.max || 0
     return m.reply("#{Bold}#{word}#{Bold} not found") if rv.empty?
 

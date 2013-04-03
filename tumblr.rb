@@ -60,6 +60,7 @@ class TumblrPlugin < Plugin
     end
     html_line = line ? CGI.escapeHTML(line) : line
     tags = line ? line.scan(/\[([^\]]+)\]/).flatten : []
+    tags << options[:nick].tr('_','')
 
     req = LOGIN % account
     ready = false
@@ -131,6 +132,7 @@ class TumblrPlugin < Plugin
     resp  = access.post api_url,quesy_hash
     #resp  = @bot.httputil.post(api_url, req)
     debug "tumblr response: #{resp.inspect}"
+    debug "tumblr body: #{resp.body}"
   end
 
   def configuration(m, params={})

@@ -60,7 +60,8 @@ class TimePlugin < Plugin
             arr.push(s) }
             zone = arr.join( sp )
         }
-
+    zone.split
+    debug zone.inspect
     tz = TZInfo::Timezone.get( zone )
     "#{tz.friendly_identifier} - #{tz.now.strftime( '%a %b %d %H:%M' )} #{tz.current_period.abbreviation}"
   end
