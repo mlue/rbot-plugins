@@ -15,12 +15,16 @@ class NotePlugin < Plugin
     "note <nick> <string> => stores a note (<string>) for <nick>"
   end
 
+  def pare_keys(keye)
+    keye.downcase.gsub(Regexp.new('(?:_|\^)[^\^|\|]*$'),'')
+  end
+  
   def message(m)
     begin
-      return unless @registry.has_key? m.sourcenick
+      return unless @registry.has_key? pare_keys(m.sourcenick)
       pub = []
       priv = []
-      @registry[m.sourcenick].each do |n|
+      @registry[pare_keys(m.sourcenick)].each do |n|
         s = "[#{n.time.strftime('%H:%M')}] <#{n.from}> #{n.text}"
         (n.private ? priv : pub).push s
       end
@@ -32,7 +36,7 @@ class NotePlugin < Plugin
       if !priv.empty?
         @bot.say m.sourcenick, "you have notes! " + priv.join(' ')
       end
-      @registry.delete m.sourcenick
+      @registry.delete pare_keys(m.sourcenick)
     rescue Exception => e
       m.reply e.message
     end
@@ -40,11 +44,16 @@ class NotePlugin < Plugin
 
   def note(m, params)
     begin
-      q = @registry[params[:nick]] || Array.new
+      q = @registry[pare_keys(params[:nick])] || Array.new
       s = params[:string].to_s.strip
       raise 'cowardly discarding the empty note' if s.empty?
-      q.push Note.new(Time.now, m.sourcenick, m.private?, s)
-      @registry[params[:nick]] = q
+      qq = q.collect{|f| f.from == pare_keys(m.sourcenick)}
+      if qq.size > 3
+        m.reply "Stop trying to spam notes you petrified rhinoceros pizzle"
+        q.delete qq.first
+      end
+      q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
+      @registry[pare_keys(params[:nick])] = q
       m.okay
     rescue Exception => e
       m.reply "error: #{e.message}"

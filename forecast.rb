@@ -15,12 +15,13 @@ require 'erb'
 
 class LatLong
     include ERB::Util
+  YAHOO_KEY='5phO4_7V34FB.y9F_dn_gt4_kd8NWVy76UdOoR4.w9UAUfJVzzIgEtKZqeLEbrh2N5S7P69dXyvnu7B5dfkUfXgYjMRP0P4-'
     # Determine the latitude and longitude of a location. City, State and/or ZIP
     # are all valid.
     # [+return+] latitude,longitude
     def get_lat_long(loc)
         loc = url_encode(loc)
-        url="http://where.yahooapis.com/geocode?appid=mrchucho_rbot_weather&q=#{loc}"
+      url="http://where.yahooapis.com/v1/places.q("+loc+")"+"?appid="+YAHOO_KEY+"&format=xml"
         lat,long = 0,0
         begin
             open(url) do |xmldoc|
@@ -125,7 +126,7 @@ class ForecastPlugin < Plugin
           f = Forecast.new(*l.get_lat_long(loc))
           forecast,forecast_date = f.forecast
         rescue => err
-          if m.source.user == "~mlue" && m.private?
+          if /mlue/ =~ m.source.user && m.private?
             File.open("/home/mlue/logs/pluginlogs/forecast.rb","a") do |f|
               f.write Time.now.to_s+"\n"
               f.write $@.inspect+"\n"
@@ -147,7 +148,7 @@ class ForecastPlugin < Plugin
           m.reply "Couldn't find forecast for #{loc}"
         end
       rescue => e
-        m.reply "ERROR: #{e}"
+        m.reply "ERROR: #{e} #{$@}"
       end
     end
 end
