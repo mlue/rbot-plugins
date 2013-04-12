@@ -6,7 +6,7 @@
 #
 # TODO: syllabic substitution
 
-6
+
 class YoutubeMonster < Plugin
   API_URL = "https://gdata.youtube.com/feeds/api/standardfeeds/US/most_discussed?time=today"
   LANG_KEY = "f7e750fec2972cf332b6cc1ee869965d"
@@ -17,6 +17,9 @@ class YoutubeMonster < Plugin
     @responded = false
   end
 
+  def cleanupup
+    @data = []
+  end
   
   def help(plugin, topic)
       "Helps 1000 monkeys to write Shakespeare"
@@ -39,12 +42,7 @@ class YoutubeMonster < Plugin
       req = Nokogiri::XML(@bot.httputil.get(f+"?max-results=50"))
       req.remove_namespaces!
       comments = (req/'feed/entry/content/text()').map(&:to_s).reject{|h| /vid/i  =~  h || /chan/i =~ h || /view/i =~ h || /subscribe/i =~ h || /youtube/i =~ h || /^[ -~]+$/i =~ h }
-      comments.each do |comment|
-        resp = JSON(@bot.httputil.get(("http://ws.detectlanguage.com/0.2/detect?q="+CGI.escape(comment)+"&key="+LANG_KEY)))
-        confirmed_data = resp['data']['detections'].select{|g| g['language'] == "en"}.size >= 1
-        @data.push confirmed_data unless confirmed_data
-        sleep (1)
-      end
+      @data.push *comments
     end    
     File.open('/home/mlue/logs/pluginlogs/ym.log','w'){|q| q.write @data.inspect}
     unless @data.empty?
