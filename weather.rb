@@ -296,7 +296,7 @@ class WeatherPlugin < Plugin
       next if vv.empty?
       next if ["-", "- approx.", "N/A", "N/A approx."].include?(vv)
       next if kk == "Raw METAR"
-      result << ("%s: %s" % [kk, vv])
+      result << ("%s: %s" % [kk.ircify_html, vv.ircify_html])
     }
     return result.join('; ')
   end

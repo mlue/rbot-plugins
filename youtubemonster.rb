@@ -27,7 +27,8 @@ class YoutubeMonster < Plugin
   
   def unreplied(m)
     begin
-      return unless 1 == rand(100)
+      return
+      #return unless 1 == rand(100)
       randomComment(m,[])
     rescue => err
       debug err.to_s+" jj "+$@.inspect
@@ -44,7 +45,6 @@ class YoutubeMonster < Plugin
       comments = (req/'feed/entry/content/text()').map(&:to_s).reject{|h| /vid/i  =~  h || /chan/i =~ h || /view/i =~ h || /subscribe/i =~ h || /youtube/i =~ h || /^[ -~]+$/i =~ h }
       @data.push *comments
     end    
-    File.open('/home/mlue/logs/pluginlogs/ym.log','w'){|q| q.write @data.inspect}
     unless @data.empty?
       return @data.delete_at rand(@data.size-1)
     end
@@ -59,7 +59,21 @@ class YoutubeMonster < Plugin
     answer = nil
     unless @data.empty?
       debug "WE ARE IN HERE"
-      m.reply @data.delete_at(rand(@data.size-1)).gsub(/\n/,""),{:nick => false,:forcenick => false, :to => :public}
+      cand = nil
+      begin 
+        cand = @data.delete_at(rand(@data.size-1)).gsub(/\n/,"")
+        resp = JSON(@bot.httputil.get(("http://ws.detectlanguage.com/0.2/detect?q="+CGI.escape(cand)+"&key="+LANG_KEY)))
+        debug resp.inspect
+        if resp['data']['detections'].select{|g| g['language'] == "en" && g['isReliable'] && g['confidence'] > 0.7}.size >= 1
+          File.open('/home/mlue/logs/pluginlogs/ym.log','a4'){|q| q.write "\n"+cand+"\n"+resp.inspect+"\n\n"}
+          break
+        else
+          File.open('/home/mlue/logs/pluginlogs/ym.log','a'){|q| q.write "\n"+cand+"\n"+resp.inspect+"\n\n"}
+        end
+      rescue
+        break
+      end while true
+      m.reply cand,{:nick => false,:forcenick => false, :to => :public} if cand
       @responded = true;
       return
     end
