@@ -15,40 +15,42 @@ require 'json'
 
 class StreamPlugin < Plugin
   API_URL = "http://api.justin.tv/api/stream/list.json"
-  CHANNELS = {"#capcom" => ["topangatv","freida0914","teamsp00ky","gostunv","leveluplive"],"##gerber" => ["draskyll","blitzdota"]}
+  CHANNELS = {}#{"#capcom" => ["iplaywinner","madcatz","nycfurby","topangatv","freida0914","teamsp00ky","gostunv","leveluplive","armshouse","ogamingtv"],"##x" => ["draskyll","blitzdota","nycfurby","topangatv","freida0914","teamsp00ky","gostunv","leveluplive","massivelytv"]}
 
   def initialize
+
     super
-    class << @registry
-      def store(val)
-        val
-      end
-      def restore(val)
-        val
-      end
-    end
-    
-    @registry.set_default(0)
-    @apiPingLoop = @bot.timer.add(300) do
+    @data = @registry['0']
+    @registry.set_default({})
+    @apiPingLoop = @bot.timer.add(100) do
       chans =  CHANNELS.select{|q| @bot.channels.map(&:name).include?(q[0])}
       debug chans
       return if chans.empty?
       chans.each do |chan,s|
         debug s.inspect
-        streams = JSON(@bot.httputil.get(API_URL+"?channel="+s))
-        unless streams.first.nil?
-          @bot.say "mlue",s+" live - "+streams.first["title"]+" http://twitch.tv/"+s if Time.parse(streams.first["up_time"]).to_i > @registry[s].to_i
-          @registry[s] = Time.parse(streams.first["up_time"]).to_i
+        s.each do |channel|
+          debug "KEY "+channel.inspect+" / VAL "+@data[channel].inspect
+          streams = JSON(@bot.httputil.get(API_URL+"?channel="+channel))
+          unless streams.first.nil?
+            @bot.say chan,channel+" live - "+streams.first["title"]+" http://twitch.tv/"+channel if Time.parse(streams.first["up_time"]).to_i > @data[channel].to_i+10800
+            debug "pushing "+Time.parse(streams.first["up_time"]).to_i.to_s+"to db"
+            @data[channel] = Time.parse(streams.first["up_time"]).to_i
+          end
         end
       end
     end
+      
+
     
     def cleanup
-      @bot.timer.stop
       @bot.timer.remove(@apiPingLoop)
+      #@registry['0'] = @data
+      @registry.vanish
+      super
     end
   end
 end
   
+  
 
-plugin = StreamPlugin.new
+#plugin = StreamPlugin.new

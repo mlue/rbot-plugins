@@ -24,7 +24,7 @@ class EricPlugin < Plugin
     c = b.split
     begin
       rnd = rand(c.size)-1
-    end while c[rnd] =~ /(?:the)|(?:a)/
+    end while c[rnd] =~ /(?:the|a|during|in|through|about|for|by|because)/i
     c[rnd] = "eric"
     c.join(" ")
   end
@@ -41,7 +41,7 @@ class EricPlugin < Plugin
       rnd = rand(c.size)-1
       x = x+1
     end while c[rnd] =~ /^(?:the)|(?:a)|(?:of)$/i && x < 20
-    if c[rnd] =~ /.[2,]ing$/
+    if c[rnd] =~ /.[2,]ing\s/
       c[rnd] = "Ericing"
     else
       c[rnd] = c[rnd].singular == c[rnd] ? "Eric" : "Erics"
@@ -60,7 +60,7 @@ class EricPlugin < Plugin
       error e.message
       warning e.backtrace.join("\n")
       answer = "failed"
-    end while answer.nil? && x < 5
+    end while answer.to_s.empty? && x < 20
     m.reply answer
   end
 end
