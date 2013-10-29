@@ -41,7 +41,7 @@ class EricPlugin < Plugin
       rnd = rand(c.size)-1
       x = x+1
     end while c[rnd] =~ /^(?:the)|(?:a)|(?:of)$/i && x < 20
-    if c[rnd] =~ /.[2,]ing\s/
+    if c[rnd] =~ /.{2,}ing/
       c[rnd] = "Ericing"
     else
       c[rnd] = c[rnd].singular == c[rnd] ? "Eric" : "Erics"
