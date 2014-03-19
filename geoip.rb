@@ -189,10 +189,15 @@ class GeoIpPlugin < Plugin
           break
         end
       }
+<<<<<<< HEAD
     rescue GeoIP::InvalidHostError, RuntimeError => e
       if nick
         p e.message
         p $@.inspect
+=======
+    rescue GeoIP::InvalidHostError, RuntimeError
+      if nick
+>>>>>>> origin/master
         return _("%{nick}'s location could not be resolved") % { :nick => nick }
       else
         return _("%{host} could not be resolved") % { :host => host }

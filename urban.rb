@@ -1,6 +1,9 @@
 class UrbanPlugin < Plugin
   require 'nokogiri'
+<<<<<<< HEAD
   require 'cgi'
+=======
+>>>>>>> origin/master
   URBAN = 'http://www.urbandictionary.com/define.php?term='
 
   def help( plugin, topic="")
@@ -30,9 +33,14 @@ class UrbanPlugin < Plugin
     rv = Array.new
 #    File.open("/home/mlue/botlog","w+"){|f| f.write s}
 #    s.tr_s("\n","").scan(%r{<div word='index'[^>]*>.*?(\d+)\..*?.*?<class='word'.*?>(?:<span>)?([^><]+)(?:</span>)?.*?<div class="definition">(.+?)</div>.*?<div class="example">(.+?)</div>}m) do |num, wrd, desc, ex|
+<<<<<<< HEAD
     ind = 0
     s.tr_s("\n","").scan(%r{<div class='word'><a[^>]*>([^>]+)</a>.*?<div class='meaning'>(.+?)</div>.*?<div class='example'>(.+?)</div>}m) do |wrd, desc, ex|
       rv << [ind+=1, wrd.strip, CGI.unescapeHTML(desc.strip), CGI.unescapeHTML(ex.strip)]
+=======
+      s.tr_s("\n","").scan(%r{<div class='word'[^>]*><a[^>]*>(\d+)\..*?</a>.*?(?:<span>)?([^><]+)(?:</span>)?.*?<div class="definition">(.+?)</div>.*?<div class="example">(.+?)</div>}m) do |num, wrd, desc, ex|
+      rv << [num.to_i, wrd.strip, desc.strip, ex.strip]
+>>>>>>> origin/master
     end
     debug rv.inspect
     maxnum = rv.collect {|x| x[0]}.max || 0
