@@ -327,11 +327,7 @@ class LastFmPlugin < Plugin
   end
 
   def now_playing(m, params)
-<<<<<<< HEAD
     opts = { :cache => false,:read_timeout => 30 }
-=======
-    opts = { :cache => false }
->>>>>>> origin/master
     user = resolve_username(m, params[:who])
     xml = @bot.httputil.get_response("#{APIURL}method=user.getrecenttracks&user=#{CGI.escape user}", opts)
     doc = Document.new xml.body

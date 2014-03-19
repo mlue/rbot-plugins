@@ -49,7 +49,6 @@ class NotePlugin < Plugin
       raise 'cowardly discarding the empty note' if s.empty?
       qq = q.collect{|f| f.from == pare_keys(m.sourcenick)}
       if qq.size > 3
-<<<<<<< HEAD
         debug __FILE__
         m.reply "Stop trying to spam notes you petrified rhinoceros pizzle"
         q.shift
@@ -60,14 +59,6 @@ class NotePlugin < Plugin
         @registry[pare_keys(params[:nick])] = q
         m.okay
       end
-=======
-        m.reply "Stop trying to spam notes you petrified rhinoceros pizzle"
-        q.delete qq.first
-      end
-      q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
-      @registry[pare_keys(params[:nick])] = q
-      m.okay
->>>>>>> origin/master
     rescue Exception => e
       m.reply "error: #{e.message}"
     end

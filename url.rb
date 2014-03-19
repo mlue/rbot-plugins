@@ -176,10 +176,6 @@ class UrlPlugin < Plugin
         debug "Title #{title ? '' : 'not '} found"
         reply = "#{LINK_INFO} #{title}" if title
       rescue => e
-<<<<<<< HEAD
-=======
-        debug e
->>>>>>> origin/master
         # we might get a 404 because of trailing punctuation, so we try again
         # with the last character stripped. this might generate invalid URIs
         # (e.g. because "some.url" gets chopped to some.url%2, so catch that too
@@ -196,11 +192,7 @@ class UrlPlugin < Plugin
             debug "Not retrying #{unescaped}"
           end
         end
-<<<<<<< HEAD
         #reply = "Error #{e.message}"
-=======
-        reply = "Error #{e.message}"
->>>>>>> origin/master
       end
 
       if display_info > urls_displayed
