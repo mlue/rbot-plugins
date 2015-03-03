@@ -49,8 +49,9 @@ class ComicPlugin < Plugin
     #BREAKPOINT
 
     msgs = [] 
+#    m.reply m.channel.to_s.gsub(/[^[:alnum:]]/,'')
     begin
-      `tail -300 $(ls -alt ~/.irclogs/*/Freenode/#light* | tac | tail -1 | awk '{print $NF}') | tac`.split("\n").each{|f|
+      `tail -300 $(ls -alt ~/.irclogs/*/*/*#{m.channel.to_s.gsub(/[^[:alnum:]]/,'').downcase}* | tac | tail -1 | awk '{print $NF}') | tac`.split("\n").each{|f|
         if msgs.size >= panels
           break
         end
@@ -178,8 +179,8 @@ class ComicPlugin < Plugin
       File.open("/home/mlue/comicpid","w"){|f| f.write 'unlocked'}
     rescue Exception => e
       p e.message
-      puts e.backtrace
       File.open("/home/mlue/comicpid","w"){|f| f.write "unlocked"}
+      File.open("/home/mlue/tmp/comicerror.log","w"){|f| f.write "#{e.backtrace.first}: #{e.message} (#{e.class})", e.backtrace.drop(1).map{|s| "\t#{s}"}}
       m.reply "sorry, I'm oom"
     end
   end

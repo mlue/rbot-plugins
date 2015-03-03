@@ -1,7 +1,7 @@
 class UrbanPlugin < Plugin
   require 'nokogiri'
-  require 'cgi'
-  URBAN = 'http://www.urbandictionary.com/define.php?term='
+  URBAN = 'http://api.urbandictionary.com/v0/define?term='
+  #'http://www.urbandictionary.com/define.php?term='
 
   def help( plugin, topic="")
     "urban [word] [n]: give the [n]th definition of [word] from urbandictionary.com. urbanday: give the word-of-the-day at urban"
@@ -13,44 +13,30 @@ class UrbanPlugin < Plugin
     "<i>#{ex}</i>".ircify_html(:limit => 100)
   end
 
-  def get_def(m, word, n = nil)
-    n = n ? n.to_i : 1
-    p = (n-1)/7 + 1
-    u = URBAN + URI.escape(word)
-    u += '&page=' + p.to_s if p > 1
-    s = @bot.httputil.get(u)
+  def get_def(m, word, n = 0)
+#    n = n ? n.to_i : 1
+#    p = (n-1)/7 + 1
+#    u = URBAN + URI.escape(word)
+#    u += '&page=' + p.to_s if p > 1
+#    s = @bot.httputil.get(u)
+
+    j = JSON(open('http://api.urbandictionary.com/v0/define?term='+URI.escape(word)).read)
+    debug "XTC #{n}"
+    n = n.to_i
+    n = 1 if n < 1 
+    definition = j["list"][ n-1 || 0]["definition"]    
+
+    numpages= j["list"].size
+
+    return m.reply Bold+word+Bold+" - ( Definition "+Bold+(n || 1).to_s+Bold+" of "+Bold+numpages.to_s+Bold+" ) - "+definition.ircify_html() #format_definition((p == numpages ? 20 : "#{(numpages-1)*7 + 1}+"), [])
+
     return m.reply("Couldn't get the urban dictionary definition for #{word}") if s.nil?
-
-    notfound = s.match %r{<i>.*?</i> isnt defined}
-
-    numpages = if s[%r{<div id='paginator'>.*?</div>}m]
-      $&.scan(/\d+/).collect {|x| x.to_i}.max || 1
-    else 1 end
-
-    rv = Array.new
-#    File.open("/home/mlue/botlog","w+"){|f| f.write s}
-#    s.tr_s("\n","").scan(%r{<div word='index'[^>]*>.*?(\d+)\..*?.*?<class='word'.*?>(?:<span>)?([^><]+)(?:</span>)?.*?<div class="definition">(.+?)</div>.*?<div class="example">(.+?)</div>}m) do |num, wrd, desc, ex|
-    ind = 0
-    s.tr_s("\n","").scan(%r{<div class='word'><a[^>]*>([^>]+)</a>.*?<div class='meaning'>(.+?)</div>.*?<div class='example'>(.+?)</div>}m) do |wrd, desc, ex|
-      rv << [ind+=1, wrd.strip, CGI.unescapeHTML(desc.strip), CGI.unescapeHTML(ex.strip)]
-    end
-    debug rv.inspect
-    maxnum = rv.collect {|x| x[0]}.max || 0
-    return m.reply("#{Bold}#{word}#{Bold} not found") if rv.empty?
-
-    if notfound
-      suggestions = rv.map { |str| Underline + str[1] + Underline }.uniq.join ', '
-      m.reply "#{Bold}#{word}#{Bold} not found. maybe you mean #{suggestions}?"
-      return
-    end
-
-    answer = rv.find { |a| a[0] == n }
-    answer ||= (n > maxnum ? rv.last : rv.first)
-    m.reply format_definition((p == numpages ? maxnum : "#{(numpages-1)*7 + 1}+"), *answer)
+    
   end
 
   def urban(m, params)
     words = params[:words].to_s
+    debug words.inspect
     if words.empty?
       resp = @bot.httputil.head('http://www.urbandictionary.com/random.php',
                                :max_redir => -1,
@@ -60,6 +46,7 @@ class UrbanPlugin < Plugin
         words = URI.unescape(loc.match(/define.php\?term=(.*)$/)[1]) rescue nil
       end
     end
+    debug 'entering getdef'
     get_def(m, words, params[:n])
   end
 

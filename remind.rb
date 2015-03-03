@@ -1,3 +1,4 @@
+# -*- coding: undecided -*-
 class RemindPlugin < Plugin
   # read a time in string format, turn it into "seconds from now".
   # example formats handled are "5 minutes", "2 days", "five hours",
@@ -141,14 +142,14 @@ class RemindPlugin < Plugin
     end
   end
 end
-#plugin = RemindPlugin.new
+plugin = RemindPlugin.new
 #
-#plugin.default_auth('other', false)
+plugin.default_auth('other', false)
 #
-#plugin.map 'remind me no more', :action => 'no_more'
-#plugin.map 'remind me no more [about] *string', :action => 'no_more'
-#plugin.map 'remind me [about] *string'
-#plugin.map 'remind :who no more', :auth_path => 'other', :action => 'no_more'
-#plugin.map 'remind :who no more [about] *string', :auth_path => 'other', :action => 'no_more'
-#plugin.map 'remind :who [about] *string', :auth_path => 'other'
+plugin.map 'remind me no more', :action => 'no_more'
+plugin.map 'remind me no more [about] *string', :action => 'no_more'
+plugin.map 'remind me [about] *string'
+plugin.map 'remind :who no more', :auth_path => 'other', :action => 'no_more'
+plugin.map 'remind :who no more [about] *string', :auth_path => 'other', :action => 'no_more'
+plugin.map 'remind :who [about] *string', :auth_path => 'other'
 

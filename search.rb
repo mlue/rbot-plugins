@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #-- vim:sw=2:et
 #++
 #
@@ -16,14 +17,14 @@
 #        for most languages
 
 GOOGLE_SEARCH = "http://www.google.com/search?oe=UTF-8&q="
-GOOGLE_WAP_SEARCH = "http://www.google.com/m/search?hl=en&q="
+GOOGLE_WAP_SEARCH = "http://www.google.com/m/search?hl=en#q="
 # GOOGLE_WAP_LINK = /<a accesskey="(\d)" href=".*?u=(.*?)">(.*?)<\/a>/im
 GOOGLE_WAP_LINK = /<a href="(?:.*?u=(.*?)|(http:\/\/.*?))">(.*?)<\/a>/im
 GOOGLE_CALC_RESULT = %r{<img src=/images/calc_img\.gif(?: width=40 height=30 alt="")?>.*?<h[1-6] class=r[^>]*><b>(.+?)</b>}
 GOOGLE_COUNT_RESULT = %r{<font size=-1>Results <b>1<\/b> - <b>10<\/b> of about <b>(.*)<\/b> for}
 GOOGLE_DEF_RESULT = %r{<br/>\s*(.*?)\s*<br/>\s*(.*?)<a href="(/dictionary\?[^"]*)"[^>]*>(More »)\s*</a>\s*<br/>}
 GOOGLE_TIME_RESULT = %r{alt="Clock"></td><td valign=[^>]+>(.+?)<(br|/td)>}
-
+require 'google-search'
 class SearchPlugin < Plugin
   Config.register Config::IntegerValue.new('google.hits',
     :default => 3,
@@ -58,6 +59,10 @@ class SearchPlugin < Plugin
   end
 
   def google(m, params)
+    search = Google::Search::Web.new(:query => params[:words].join(" ")).first
+    m.reply "Result for "+Bold+params[:words].join(" ")+Bold+" | "+search.uri+' | '+search.title
+
+    return 
     what = params[:words].to_s
     if what.match(/^define:/)
       return google_define(m, what, params)
@@ -90,7 +95,8 @@ class SearchPlugin < Plugin
       m.reply "error googling for #{what}"
       return
     end
-    results = wml.match('<p align="center">').pre_match.scan(GOOGLE_WAP_LINK)
+    debug wml.inspect
+    results = wml.scan('class="rc"')
 
     if results.length == 0
       m.reply "no results found for #{what}"
