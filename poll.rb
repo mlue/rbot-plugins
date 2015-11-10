@@ -118,6 +118,7 @@ class PollPlugin < Plugin
     init_reg_entry :running, Hash.new
     init_reg_entry :archives, Hash.new
     init_reg_entry :last_poll_id, 0
+<<<<<<< HEAD
     running = @registry[:running]
     now = Time.now
     running.each do |id, poll|
@@ -130,6 +131,8 @@ class PollPlugin < Plugin
         count_votes(poll.id)
       end
     end
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def authors_running_count(victim)
@@ -236,9 +239,13 @@ class PollPlugin < Plugin
     return if poll == nil
     poll.stop!
 
+<<<<<<< HEAD
     dest = poll.channel ? poll.channel : poll.author
 
     @bot.say(dest, _("let's find the answer to: %{q}") % {
+=======
+    @bot.say(poll.channel, _("let's find the answer to: %{q}") % {
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       :q => "#{Bold}#{poll.question}#{Bold}"
     })
 
@@ -270,7 +277,11 @@ class PollPlugin < Plugin
       end
     end
 
+<<<<<<< HEAD
     @bot.say dest, poll.outcome
+=======
+    @bot.say poll.channel, poll.outcome
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     # Now that we're done, move it to the archives
     archives = @registry[:archives]
@@ -327,15 +338,25 @@ class PollPlugin < Plugin
       return
     end
 
+<<<<<<< HEAD
     to_reply = _("poll #%{id} was asked by %{bold}%{author}%{bold} in %{bold}%{channel}%{bold} %{started}.").dup
+=======
+    to_reply = _("poll #%{id} was asked by %{bold}%{author}%{bold} in %{bold}%{channel}%{bold} %{started}.")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     options = ''
     outcome = ''
     if poll.running
       to_reply << _(" It's still running!")
       if poll.voters.has_key? m.sourcenick
+<<<<<<< HEAD
         to_reply << _(" Be patient, it'll end %{end}")
       else
         to_reply << _(" You have until %{end} to vote if you haven't!")
+=======
+        to_reply << _(" Be patient, it'll end at %{end}")
+      else
+        to_reply << _(" You have until %{poll.ends_at} to vote if you haven't!")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         options << " #{poll.options}"
       end
     else
@@ -344,8 +365,12 @@ class PollPlugin < Plugin
 
     m.reply((to_reply % {
       :bold => Bold,
+<<<<<<< HEAD
       :id => poll.id, :author => poll.author,
       :channel => (poll.channel ? poll.channel : _("private")),
+=======
+      :id => poll.id, :author => poll.author, :channel => poll.channel,
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       :started => poll.started,
       :end => poll.ends_at
     }) + options + outcome)

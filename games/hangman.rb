@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# -*- coding: utf-8 -*-
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 #-- vim:sw=2:et
 #++
 #
@@ -16,7 +20,10 @@ module RandomWord
 
   def self.get(count=1)
     res = Net::HTTP.post_form(URI.parse(SITE), {'numwords' => count})
+<<<<<<< HEAD
     raise _("random word generator site failed with #{res.code} - #{res.message}") unless Net::HTTPSuccess === res
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     words = res.body.scan(%r{<a.*?\?w=(.*?)\n}).flatten
 
     count == 1 ? words.first : words
@@ -29,7 +36,11 @@ module Google
 
   def self.define(phrase)
     raw = Net::HTTP.get(URI.parse(URL+CGI.escape(phrase)))
+<<<<<<< HEAD
     res = raw.scan(REGEX).flatten.map { |e| e.ircify_html }
+=======
+    res = raw.scan(REGEX).flatten.map { |e| e.strip }
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     res.empty? ? false : res.last
   end
@@ -242,6 +253,11 @@ class HangmanPlugin < Plugin
 
   def help(plugin, topic="")
     case topic
+<<<<<<< HEAD
+=======
+    when ""
+      return _("hangman game plugin - topics: play, stop")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     when "play"
       return [_("hangman play on <channel> with word <word> => use in private chat with the bot to start a game with custom word\n"),
               _("hangman play random [with [max|min] length [<|>|== <length>]] => hangman with a random word from %{site}\n"),
@@ -249,9 +265,13 @@ class HangmanPlugin < Plugin
     when "stop"
       return _("hangman stop => quits the current game")
     when "define"
+<<<<<<< HEAD
       return _("hangman define => seeks a definition for the previous answer using google")
     else
       return _("hangman game plugin - topics: play, stop, define")
+=======
+      return _("define => seeks a definition for the previous answer using google")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 
@@ -304,11 +324,24 @@ class HangmanPlugin < Plugin
       target = if m.public?
         m.channel
       else
+<<<<<<< HEAD
         @bot.server.channel(params[:channel])
       end
 
       # is the bot on the channel?
       unless @bot.myself.channels.include?(target)
+=======
+        params[:channel]
+      end
+      
+      if m.channel.name != "#lhgames"
+        m.reply "Please go to #lhgames to play hangman!"
+        return
+      end
+
+      # is the bot on the channel?
+      unless @bot.server.channels.names.include?(target.to_s)
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         m.reply _("i'm not on that channel")
         return
       end
@@ -394,8 +427,13 @@ class HangmanPlugin < Plugin
         }, :nick => true
 
         if rand(5).zero?
+<<<<<<< HEAD
           m.reply _("wondering what that means? try ´%{prefix}hangman define´") % {
             :prefix => @bot.config['core.address_prefix'].first
+=======
+          m.reply _("wondering what that means? try ´%{prefix}define´") % {
+            :prefix => @bot.config['core.address_prefix']
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           }
         end
 
@@ -480,6 +518,7 @@ class HangmanPlugin < Plugin
 
   def define(m, params)
     if game = @games.previous(m.replyto)
+<<<<<<< HEAD
       if res = Google.define(game.word)
         m.reply "#{Bold}#{game.word}#{Bold} -- #{res}"
       else
@@ -487,6 +526,10 @@ class HangmanPlugin < Plugin
       end
     else
       m.reply _("no hangman game was played here recently, what do you want me to define?")
+=======
+      return unless res = Google.define(game.word)
+      m.reply "#{Bold}#{game.word}#{Bold} -- #{res}"
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 end
@@ -502,4 +545,8 @@ plugin.map "hangman stop", :action => 'stop'
 
 plugin.map "hangman score [:nick]", :action => 'score'
 plugin.map "hangman stats", :action => 'stats'
+<<<<<<< HEAD
 plugin.map "hangman define", :action => 'define'
+=======
+plugin.map "define", :action => 'define'
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20

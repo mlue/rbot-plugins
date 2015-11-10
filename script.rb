@@ -17,10 +17,13 @@ define_structure :Command, :code, :nick, :created, :channel
 
 class ScriptPlugin < Plugin
 
+<<<<<<< HEAD
   Config.register Config::IntegerValue.new('script.safe',
     :default => 3,
     :desc => 'configure $SAFE level for scripts (3=safe/tainted, 0=unsafe/ruby default)')
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   def initialize
     super
     if @registry.has_key?(:commands)
@@ -72,7 +75,12 @@ class ScriptPlugin < Plugin
       user = args.empty? ? m.sourcenick : args.first
 
       Thread.start {
+<<<<<<< HEAD
         $SAFE = @bot.config['script.safe']
+=======
+        # TODO allow different safe levels for different botusers
+        $SAFE = 3
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
         begin
           eval( code )
@@ -108,8 +116,12 @@ class ScriptPlugin < Plugin
   def handle_eval( m, params )
     code = params[:code].to_s.dup.untaint
     Thread.start {
+<<<<<<< HEAD
       $SAFE = @bot.config['script.safe']
 
+=======
+      # TODO allow different safe levels for different botusers
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       begin
         eval( code )
       rescue Exception => e
@@ -123,8 +135,12 @@ class ScriptPlugin < Plugin
   def handle_echo( m, params )
     code = params[:code].to_s.dup.untaint
     Thread.start {
+<<<<<<< HEAD
       $SAFE = @bot.config['script.safe']
 
+=======
+      # TODO allow different safe levels for different botusers
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       begin
         m.reply eval( code ).to_s
       rescue Exception => e

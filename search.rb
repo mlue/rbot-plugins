@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# -*- coding: utf-8 -*-
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 #-- vim:sw=2:et
 #++
 #
@@ -16,6 +20,7 @@
 #        for most languages
 
 GOOGLE_SEARCH = "http://www.google.com/search?oe=UTF-8&q="
+<<<<<<< HEAD
 GOOGLE_WAP_SEARCH = "http://www.google.com/m/search?hl=en&q="
 GOOGLE_WAP_LINK = /"r">(?:<div[^>]*>)?<a href="([^"]+)"[^>]*>(.*?)<\/a>/im
 GOOGLE_CALC_RESULT = %r{<h[1-6] class="r" [^>]*>(.+?)</h}
@@ -37,6 +42,17 @@ class SearchPlugin < Plugin
   Config.register Config::IntegerValue.new('duckduckgo.first_par',
     :default => 0,
     :desc => "When set to n > 0, the bot will return the first paragraph from the first n search hits")
+=======
+GOOGLE_WAP_SEARCH = "http://www.google.com/m/search?hl=en#q="
+# GOOGLE_WAP_LINK = /<a accesskey="(\d)" href=".*?u=(.*?)">(.*?)<\/a>/im
+GOOGLE_WAP_LINK = /<a href="(?:.*?u=(.*?)|(http:\/\/.*?))">(.*?)<\/a>/im
+GOOGLE_CALC_RESULT = %r{<img src=/images/calc_img\.gif(?: width=40 height=30 alt="")?>.*?<h[1-6] class=r[^>]*><b>(.+?)</b>}
+GOOGLE_COUNT_RESULT = %r{<font size=-1>Results <b>1<\/b> - <b>10<\/b> of about <b>(.*)<\/b> for}
+GOOGLE_DEF_RESULT = %r{<br/>\s*(.*?)\s*<br/>\s*(.*?)<a href="(/dictionary\?[^"]*)"[^>]*>(More »)\s*</a>\s*<br/>}
+GOOGLE_TIME_RESULT = %r{alt="Clock"></td><td valign=[^>]+>(.+?)<(br|/td)>}
+require 'google-search'
+class SearchPlugin < Plugin
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   Config.register Config::IntegerValue.new('google.hits',
     :default => 3,
     :desc => "Number of hits to return from Google searches")
@@ -52,9 +68,12 @@ class SearchPlugin < Plugin
 
   def help(plugin, topic="")
     case topic
+<<<<<<< HEAD
     when "ddg"
       "Use '#{topic} <string>' to return a search or calculation from " +
       "DuckDuckGo. Use #{topic} define <string> to return a definition."
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     when "search", "google"
       "#{topic} <string> => search google for <string>"
     when "gcalc"
@@ -63,13 +82,17 @@ class SearchPlugin < Plugin
       "gdef <term(s)> => use the google define mechanism to find a definition of <term(s)>"
     when "gtime"
       "gtime <location> => use the google clock to find the current time at <location>"
+<<<<<<< HEAD
     when "wa"
       "wa <string> => searches WolframAlpha for <string>"
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     when "wp"
       "wp [<code>] <string> => search for <string> on Wikipedia. You can select a national <code> to only search the national Wikipedia"
     when "unpedia"
       "unpedia <string> => search for <string> on Uncyclopedia"
     else
+<<<<<<< HEAD
       "search <string> (or: google <string>) => search google for <string> | ddg <string> to search DuckDuckGo | wp <string> => search for <string> on Wikipedia | wa <string> => search for <string> on WolframAlpha | unpedia <string> => search for <string> on Uncyclopedia"
     end
   end
@@ -190,6 +213,17 @@ class SearchPlugin < Plugin
   end
 
   def google(m, params)
+=======
+      "search <string> (or: google <string>) => search google for <string> | wp <string> => search for <string> on Wikipedia | unpedia <string> => search for <string> on Uncyclopedia"
+    end
+  end
+
+  def google(m, params)
+    search = Google::Search::Web.new(:query => params[:words].join(" ")).first
+    m.reply "Result for "+Bold+params[:words].join(" ")+Bold+" | "+search.uri+' | '+search.title
+
+    return 
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     what = params[:words].to_s
     if what.match(/^define:/)
       return google_define(m, what, params)
@@ -222,7 +256,12 @@ class SearchPlugin < Plugin
       m.reply "error googling for #{what}"
       return
     end
+<<<<<<< HEAD
     results = wml.scan(GOOGLE_WAP_LINK)
+=======
+    debug wml.inspect
+    results = wml.scan('class="rc"')
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if results.length == 0
       m.reply "no results found for #{what}"
@@ -230,6 +269,7 @@ class SearchPlugin < Plugin
     end
 
     single ||= (results.length==1)
+<<<<<<< HEAD
     pretty = []
 
     begin
@@ -270,6 +310,29 @@ class SearchPlugin < Plugin
     end
 
     result_string = pretty.join(" | ")
+=======
+
+    urls = Array.new
+    n = 0
+    results = results[0...hits].map { |res|
+      n += 1
+      t = res[2].ircify_html(:img => "[%{src} %{alt} %{dimensions}]").strip
+      u = URI.unescape(res[0] || res[1])
+      urls.push(u)
+      "%{n}%{b}%{t}%{b}%{sep}%{u}" % {
+        :n => (single ? "" : "#{n}. "),
+        :sep => (single ? " -- " : ": "),
+        :b => Bold, :t => t, :u => u
+      }
+    }
+
+    if params[:lucky]
+      m.reply results.first
+      return
+    end
+
+    result_string = results.join(" | ")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     # If we return a single, full result, change the output to a more compact representation
     if single
@@ -333,6 +396,7 @@ class SearchPlugin < Plugin
     end
 
     debug "#{html.size} bytes of html recieved"
+<<<<<<< HEAD
     debug html
 
     candidates = html.match(GOOGLE_CALC_RESULT)
@@ -343,6 +407,16 @@ class SearchPlugin < Plugin
       return
     end
     result = candidates[1]
+=======
+
+    intro, result, junk = html.split(/\s*<br\/>\s*/, 3)
+    debug "result: #{result.inspect}"
+
+    unless result.include? '='
+      m.reply "couldn't calculate #{what}"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     debug "replying with: #{result.inspect}"
     m.reply result.ircify_html
@@ -401,6 +475,7 @@ class SearchPlugin < Plugin
       return
     end
 
+<<<<<<< HEAD
     head = results[0][0].ircify_html
     text = results[0][1].ircify_html
     m.reply "#{head} -- #{text}"
@@ -452,6 +527,22 @@ class SearchPlugin < Plugin
     chars = [ [/\n/, sep], [/\t/, " "], [/\s+/, " "], ["|", "-"] ]
     chars.each { |c| answer[n].gsub!(c[0], c[1]) }
     m.reply answer_type[n] + sep + answer[n]
+=======
+    gdef_link = "http://www.google.com" + CGI.unescapeHTML(results[0][2]) # could be used to extract all defs
+    head = results[0][0].ircify_html
+    text = results[0][1].ircify_html
+    m.reply "#{head} -- #{text}"
+
+    ### gdef_link could be used for something like
+    # html_defs = @bot.httputil.get(gdef_link)
+    # related_index = html_defs.index(/Related phrases:/, 0)
+    # defs_index = html_defs.index(/Definitions of <b>/, related_index)
+
+    # related = html_defs[related_index..defs_index]
+    # defs = html_defs[defs_index..-1]
+
+    # m.reply defs.gsub('  <br/>','<li>').ircify_html
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def wikipedia(m, params)
@@ -504,7 +595,10 @@ end
 
 plugin = SearchPlugin.new
 
+<<<<<<< HEAD
 plugin.map "ddg *words", :action => 'duckduckgo', :threaded => true
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 plugin.map "search *words", :action => 'google', :threaded => true
 plugin.map "google *words", :action => 'google', :threaded => true
 plugin.map "lucky *words", :action => 'lucky', :threaded => true
@@ -512,7 +606,14 @@ plugin.map "gcount *words", :action => 'gcount', :threaded => true
 plugin.map "gcalc *words", :action => 'gcalc', :threaded => true
 plugin.map "gdef *words", :action => 'gdef', :threaded => true
 plugin.map "gtime *words", :action => 'gtime', :threaded => true
+<<<<<<< HEAD
 plugin.map "wa *words", :action => 'wolfram', :threaded => true
 plugin.map "wp :lang *words", :action => 'wikipedia', :requirements => { :lang => /^\w\w\w?$/ }, :threaded => true
 plugin.map "wp *words", :action => 'wikipedia', :threaded => true
 plugin.map "unpedia *words", :action => 'unpedia', :threaded => true
+=======
+plugin.map "wp :lang *words", :action => 'wikipedia', :requirements => { :lang => /^\w\w\w?$/ }, :threaded => true
+plugin.map "wp *words", :action => 'wikipedia', :threaded => true
+plugin.map "unpedia *words", :action => 'unpedia', :threaded => true
+
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20

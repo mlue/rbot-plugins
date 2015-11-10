@@ -160,6 +160,7 @@ class LastFmPlugin < Plugin
 
     doc.root.elements.each("results/venuematches/venue") do |v|
       venue = LastFmVenue.new
+<<<<<<< HEAD
       venue.id      = v.elements["id"].get_text.value.to_i
       venue.url     = v.elements["url"].get_text.value
       venue.lat     = v.elements["location/geo:point/geo:lat"].get_text.value.to_f
@@ -169,6 +170,17 @@ class LastFmPlugin < Plugin
       venue.street  = v.elements["location/street"].get_text.value
       venue.postal  = v.elements["location/postalcode"].get_text.value
       venue.country = v.elements["location/country"].get_text.value
+=======
+      venue.id      = v.elements["id"].text.to_i
+      venue.url     = v.elements["url"].text
+      venue.lat     = v.elements["location/geo:point/geo:lat"].text.to_f
+      venue.long    = v.elements["location/geo:point/geo:long"].text.to_f
+      venue.name    = v.elements["name"].text
+      venue.city    = v.elements["location/city"].text
+      venue.street  = v.elements["location/street"].text
+      venue.postal  = v.elements["location/postalcode"].text
+      venue.country = v.elements["location/country"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
       results << venue
     end
@@ -221,7 +233,11 @@ class LastFmPlugin < Plugin
     doc = Document.new xml.body
     if xml.class == Net::HTTPInternalServerError
       if doc.root and doc.root.attributes["status"] == "failed"
+<<<<<<< HEAD
         m.reply doc.root.elements["error"].get_text.value
+=======
+        m.reply doc.root.elements["error"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       else
         m.reply _("could not retrieve events")
       end
@@ -230,6 +246,7 @@ class LastFmPlugin < Plugin
     events = Array.new
     doc.root.elements.each("events/event"){ |e|
       h = {}
+<<<<<<< HEAD
       h[:title] = e.elements["title"].get_text.value
       venue = e.elements["venue"].elements["name"].get_text.value
       city = e.elements["venue"].elements["location"].elements["city"].get_text.value
@@ -243,6 +260,21 @@ class LastFmPlugin < Plugin
       artists = Array.new
       e.elements.each("artists/artist"){ |a|
         artists << a.get_text.value
+=======
+      h[:title] = e.elements["title"].text
+      venue = e.elements["venue"].elements["name"].text
+      city = e.elements["venue"].elements["location"].elements["city"].text
+      country =  e.elements["venue"].elements["location"].elements["country"].text
+      h[:location] = Underline + venue + Underline + " #{Bold + city + Bold}, #{country}"
+      date = e.elements["startDate"].text.split
+      h[:date] = Time.utc(date[3].to_i, date[2], date[1].to_i)
+      h[:desc] = e.elements["description"].text
+      h[:url] = e.elements["url"].text
+      h[:attendance] = e.elements["attendance"].text.to_i
+      artists = Array.new
+      e.elements.each("artists/artist"){ |a|
+        artists << a.text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       }
       h[:artists] = artists
       events << LastFmEvent.new(h)
@@ -282,19 +314,32 @@ class LastFmPlugin < Plugin
     end
     if xml.class == Net::HTTPBadRequest
       if doc.root.elements["error"].attributes["code"] == "7" then
+<<<<<<< HEAD
         error = doc.root.elements["error"].get_text.value
+=======
+        error = doc.root.elements["error"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         error.match(/Invalid username: \[(.*)\]/);
         baduser = $1
 
         m.reply _("%{u} doesn't exist on last.fm") % {:u => baduser}
         return
       else
+<<<<<<< HEAD
         m.reply _("error: %{e}") % {:e => doc.root.element["error"].get_text.value}
         return
       end
     end
     score = doc.root.elements["comparison/result/score"].get_text.value.to_f
     artists = doc.root.get_elements("comparison/result/artists/artist").map { |e| e.elements["name"].get_text.value}
+=======
+        m.reply _("error: %{e}") % {:e => doc.root.element["error"].text}
+        return
+      end
+    end
+    score = doc.root.elements["comparison/result/score"].text.to_f
+    artists = doc.root.get_elements("comparison/result/artists/artist").map { |e| e.elements["name"].text}
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     case
       when score >= 0.9
         rating = _("Super")
@@ -343,7 +388,11 @@ class LastFmPlugin < Plugin
         }
         return
       else
+<<<<<<< HEAD
         m.reply _("error: %{e}") % {:e => doc.root.element["error"].get_text.value}
+=======
+        m.reply _("error: %{e}") % {:e => doc.root.element["error"].text}
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         return
       end
     end
@@ -354,6 +403,7 @@ class LastFmPlugin < Plugin
     end
     first = doc.root.elements[1].elements[1]
     now = first.attributes["nowplaying"]
+<<<<<<< HEAD
     artist = first.elements["artist"].get_text.value
     track = first.elements["name"].get_text.value
     albumtxt = first.elements["album"].get_text.value
@@ -362,6 +412,18 @@ class LastFmPlugin < Plugin
       # if year
       #   _(" [%{albumtext}, %{year}]") % { :albumtext => albumtxt, :year => year }
     _(" [%{albumtext}]") % { :albumtext => albumtxt }
+=======
+    artist = first.elements["artist"].text
+    track = first.elements["name"].text
+    albumtxt = first.elements["album"].text
+    album = if albumtxt
+      year = get_album(artist, albumtxt)[2]
+      if year
+        _(" [%{albumtext}, %{year}]") % { :albumtext => albumtxt, :year => year }
+      else
+        _(" [%{albumtext}]") % { :albumtext => albumtxt }
+      end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     else
       nil
     end
@@ -411,6 +473,7 @@ class LastFmPlugin < Plugin
     tags_doc = Document.new tags_xml
 
     first = info_doc.root.elements["artist"]
+<<<<<<< HEAD
     artist = first.elements["name"].get_text.value
     url = first.elements["url"].get_text.value
     stats = {}
@@ -423,6 +486,20 @@ class LastFmPlugin < Plugin
       _("%{b}%{a}%{b}") % { :a => a.elements["name"].get_text.value, :b => Bold } }
     tags = tags_doc.root.get_elements("toptags/tag")[0..4].map { |t|
       _("%{u}%{t}%{u}") % { :t => t.elements["name"].get_text.value, :u => Underline } }
+=======
+    artist = first.elements["name"].text
+    url = first.elements["url"].text
+    stats = {}
+    %w(playcount listeners).each do |e|
+      t = first.elements["stats/#{e}"].text
+      stats[e.to_sym] = t.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1,")
+    end
+    summary = first.elements["bio"].elements["summary"].text
+    similar = first.get_elements("similar/artist").map { |a|
+      _("%{b}%{a}%{b}") % { :a => a.elements["name"].text, :b => Bold } }
+    tags = tags_doc.root.get_elements("toptags/tag")[0..4].map { |t|
+      _("%{u}%{t}%{u}") % { :t => t.elements["name"].text, :u => Underline } }
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     reply = _("%{b}%{a}%{b} <%{u}> has been played %{b}%{c}%{b} times and is being listened to by %{b}%{l}%{b} people") % {
       :b => Bold, :a => artist, :u => url, :c => stats[:playcount], :l => stats[:listeners] }
     reply << _(". Tagged as: %{t}") % {
@@ -447,15 +524,25 @@ class LastFmPlugin < Plugin
       return
     end
     debug doc.root
+<<<<<<< HEAD
     results = doc.root.elements["results/opensearch:totalResults"].get_text.value.to_i rescue 0
+=======
+    results = doc.root.elements["results/opensearch:totalResults"].text.to_i rescue 0
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     if results > 0
       begin
         hits = []
         doc.root.each_element("results/trackmatches/track") do |trck|
           hits << _("%{bold}%{t}%{bold} by %{bold}%{a}%{bold} (%{n} listeners)") % {
+<<<<<<< HEAD
             :t => trck.elements["name"].get_text.value,
             :a => trck.elements["artist"].get_text.value,
             :n => trck.elements["listeners"].get_text.value,
+=======
+            :t => trck.elements["name"].text,
+            :a => trck.elements["artist"].text,
+            :n => trck.elements["listeners"].text,
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
             :bold => Bold
           }
         end
@@ -518,6 +605,7 @@ class LastFmPlugin < Plugin
     end
     album = date = playcount = artist = date = year = nil
     first = doc.root.elements["album"]
+<<<<<<< HEAD
     artist = first.elements["artist"].get_text.value
     playcount = first.elements["playcount"].get_text.value
     album = first.elements["name"].get_text.value
@@ -526,6 +614,16 @@ class LastFmPlugin < Plugin
     #   year = date.strip.split[2].chop
     # end
     result = [artist, album, playcount]
+=======
+    artist = first.elements["artist"].text
+    playcount = first.elements["playcount"].text
+    album = first.elements["name"].text
+    date = first.elements["releasedate"].text
+    unless date.strip.length < 2
+      year = date.strip.split[2].chop
+    end
+    result = [artist, album, year, playcount]
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     return result
   end
 
@@ -619,7 +717,11 @@ class LastFmPlugin < Plugin
     case res
     when Net::HTTPBadRequest
       if doc.root and doc.root.attributes["status"] == "failed"
+<<<<<<< HEAD
         m.reply "error: " << doc.root.elements["error"].get_text.value.downcase
+=======
+        m.reply "error: " << doc.root.elements["error"].text.downcase
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
       return
     end
@@ -628,7 +730,11 @@ class LastFmPlugin < Plugin
     case action
     when :friends
       friends = doc.root.get_elements("friends/user").map do |u|
+<<<<<<< HEAD
         u.elements["name"].get_text.value
+=======
+        u.elements["name"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
 
       if friends.empty?
@@ -646,7 +752,11 @@ class LastFmPlugin < Plugin
       }
     when :lovedtracks
       loved = doc.root.get_elements("lovedtracks/track").map do |track|
+<<<<<<< HEAD
         [track.elements["artist/name"].get_text.value, track.elements["name"].get_text.value].join(" - ")
+=======
+        [track.elements["artist/name"].text, track.elements["name"].text].join(" - ")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
       loved_prep = loved.shuffle[0, num].to_enum(:each_with_index).collect { |e,i| (i % 2).zero? ? Underline+e+Underline : e }
 
@@ -666,7 +776,11 @@ class LastFmPlugin < Plugin
         }
     when :neighbours
       nbrs = doc.root.get_elements("neighbours/user").map do |u|
+<<<<<<< HEAD
         u.elements["name"].get_text.value
+=======
+        u.elements["name"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
 
       if nbrs.empty?
@@ -683,7 +797,11 @@ class LastFmPlugin < Plugin
       }
     when :recenttracks
       tracks = doc.root.get_elements("recenttracks/track").map do |track|
+<<<<<<< HEAD
         [track.elements["artist"].get_text.value, track.elements["name"].get_text.value].join(" - ")
+=======
+        [track.elements["artist"].text, track.elements["name"].text].join(" - ")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
 
       counts = []
@@ -717,8 +835,13 @@ class LastFmPlugin < Plugin
       else
         shouts[0, num].each do |shout|
           m.reply _("<%{author}> %{body}") % {
+<<<<<<< HEAD
             :body   => shout.elements["body"].get_text.value,
             :author => shout.elements["author"].get_text.value,
+=======
+            :body   => shout.elements["body"].text,
+            :author => shout.elements["author"].text,
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           }
         end
       end
@@ -728,6 +851,7 @@ class LastFmPlugin < Plugin
         case action
         when :weeklytrackchart, :weeklyalbumchart
           format = "%{artist} - %{title} (%{bold}%{plays}%{bold})"
+<<<<<<< HEAD
           artist = item.elements["artist"].get_text.value
         when :weeklyartistchart, :topartists
           format = "%{artist} (%{bold}%{plays}%{bold})"
@@ -735,12 +859,26 @@ class LastFmPlugin < Plugin
         when :toptracks, :topalbums
           format = "%{artist} - %{title} (%{bold}%{plays}%{bold})"
           artist = item.elements["artist/name"].get_text.value
+=======
+          artist = item.elements["artist"].text
+        when :weeklyartistchart, :topartists
+          format = "%{artist} (%{bold}%{plays}%{bold})"
+          artist = item.elements["name"].text
+        when :toptracks, :topalbums
+          format = "%{artist} - %{title} (%{bold}%{plays}%{bold})"
+          artist = item.elements["artist/name"].text
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         end
 
         _(format) % {
           :artist => artist,
+<<<<<<< HEAD
           :title  => item.elements["name"].get_text.value,
           :plays  => item.elements["playcount"].get_text.value,
+=======
+          :title  => item.elements["name"].text,
+          :plays  => item.elements["playcount"].text,
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           :bold   => Bold
         }
       end
@@ -792,5 +930,10 @@ plugin.map 'lastfm [user] [:num] :action [:user] over [*period]', :thread => tru
     :period => /^(?:(?:3|6|12) months)|(?:a\s|1\s)?year$/,
     :num => /^\d+$/
 }
+<<<<<<< HEAD
 plugin.map 'lastfm [now] [:who]', :action => :now_playing
 plugin.map 'np [:who]', :action => :now_playing
+=======
+plugin.map 'lastfm [now] [:who]', :action => :now_playing, :thread => true
+plugin.map 'np [:who]', :action => :now_playing, :thread => true
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20

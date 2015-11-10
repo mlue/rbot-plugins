@@ -9,6 +9,7 @@
 # License:: MIT license
 
 class NotePlugin < Plugin
+<<<<<<< HEAD
 
   Note = Struct.new('Note', :time, :from, :private, :text)
 
@@ -59,6 +60,36 @@ class NotePlugin < Plugin
         @bot.say m.sourcenick, 'you have notes! ' + priv.join(' ')
       end
       @registry.delete nick
+=======
+  Note = Struct.new('Note', :time, :from, :private, :text)
+
+  def help(plugin, topic="")
+    "note <nick> <string> => stores a note (<string>) for <nick>"
+  end
+
+  def pare_keys(keye)
+    keye.downcase.gsub(Regexp.new('(?:_|\^)[^\^|\|]*$'),'')
+  end
+  
+  def message(m)
+    begin
+      return unless @registry.has_key? pare_keys(m.sourcenick)
+      pub = []
+      priv = []
+      @registry[pare_keys(m.sourcenick)].each do |n|
+        s = "[#{n.time.strftime('%H:%M')}] <#{n.from}> #{n.text}"
+        (n.private ? priv : pub).push s
+      end
+      if !pub.empty?
+        @bot.say m.replyto, "#{m.sourcenick}, you have notes! " +
+          pub.join(' ')
+      end
+
+      if !priv.empty?
+        @bot.say m.sourcenick, "you have notes! " + priv.join(' ')
+      end
+      @registry.delete pare_keys(m.sourcenick)
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     rescue Exception => e
       m.reply e.message
     end
@@ -66,6 +97,7 @@ class NotePlugin < Plugin
 
   def note(m, params)
     begin
+<<<<<<< HEAD
       nick = params[:nick].downcase
       q = @registry[nick] || Array.new
       s = params[:string].to_s.strip
@@ -73,6 +105,23 @@ class NotePlugin < Plugin
       q.push Note.new(Time.now, m.sourcenick, m.private?, s)
       @registry[nick] = q
       m.okay
+=======
+      q = @registry[pare_keys(params[:nick])] || Array.new
+      s = params[:string].to_s.strip
+      raise 'cowardly discarding the empty note' if s.empty?
+      qq = q.collect{|f| f.from == pare_keys(m.sourcenick)}
+      if qq.size > 3
+        debug __FILE__
+        m.reply "Stop trying to spam notes you petrified rhinoceros pizzle"
+        q.shift
+        q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
+        @registry[pare_keys(params[:nick])] = q
+      else
+        q.push Note.new(Time.now, pare_keys(m.sourcenick), m.private?, s)
+        @registry[pare_keys(params[:nick])] = q
+        m.okay
+      end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     rescue Exception => e
       m.reply "error: #{e.message}"
     end

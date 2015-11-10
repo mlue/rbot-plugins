@@ -175,6 +175,7 @@ class QuizPlugin < Plugin
     @ask_mutex = Mutex.new
   end
 
+<<<<<<< HEAD
   def cleanup
     @ask_mutex.synchronize do
       # purge all waiting timers
@@ -191,6 +192,8 @@ class QuizPlugin < Plugin
     end
   end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   # Function that returns whether a char is a "separator", used for hints
   #
   def is_sep( ch )
@@ -274,17 +277,25 @@ class QuizPlugin < Plugin
 
 
   # Returns new Quiz instance for channel, or existing one
+<<<<<<< HEAD
   # Announce errors if a message is passed as second parameter
   #
   def create_quiz(channel, m=nil)
+=======
+  #
+  def create_quiz( channel )
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     unless @quizzes.has_key?( channel )
       @quizzes[channel] = Quiz.new( channel, @registry )
     end
 
     if @quizzes[channel].has_errors
+<<<<<<< HEAD
       m.reply _("Sorry, the quiz database for %{chan} seems to be corrupt") % {
         :chan => channel
       } if m
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       return nil
     else
       return @quizzes[channel]
@@ -294,18 +305,31 @@ class QuizPlugin < Plugin
 
   def say_score( m, nick )
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if q.registry.has_key?( nick )
       score = q.registry[nick].score
       jokers = q.registry[nick].jokers
 
       rank = 0
+<<<<<<< HEAD
       q.rank_table.each do |place|
         rank += 1
         break if nick.downcase == place[0].downcase
       end
+=======
+      q.rank_table.each_index { |rank| break if nick.downcase == q.rank_table[rank][0].downcase }
+      rank += 1
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
       m.reply "#{nick}'s score is: #{score}    Rank: #{rank}    Jokers: #{jokers}"
     else
@@ -316,6 +340,7 @@ class QuizPlugin < Plugin
 
   def help( plugin, topic="" )
     if topic == "admin"
+<<<<<<< HEAD
       _("Quiz game aministration commands (requires authentication): ") + [
         _("'quiz autoask <on/off>' => enable/disable autoask mode"),
         _("'quiz autoask delay <time>' => delay next quiz by <time> when in autoask mode"),
@@ -327,6 +352,9 @@ class QuizPlugin < Plugin
         _("'quiz deleteplayer <player>' => delete one player from the rank table (only works when score and jokers are set to 0)"),
         _("'quiz cleanup' => remove players with no points and no jokers")
       ].join(". ")
+=======
+      "Quiz game aministration commands (requires authentication): 'quiz autoask <on/off>' => enable/disable autoask mode. 'quiz autoask delay <secs>' => delay next quiz by <secs> seconds when in autoask mode. 'quiz transfer <source> <dest> [score] [jokers]' => transfer [score] points and [jokers] jokers from <source> to <dest> (default is entire score and all jokers). 'quiz setscore <player> <score>' => set <player>'s score to <score>. 'quiz setjokers <player> <jokers>' => set <player>'s number of jokers to <jokers>. 'quiz deleteplayer <player>' => delete one player from the rank table (only works when score and jokers are set to 0). 'quiz cleanup' => remove players with no points and no jokers."
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     else
       urls = @bot.config['quiz.sources'].select { |p| p =~ /^https?:\/\// }
       "A multiplayer trivia quiz. 'quiz' => ask a question. 'quiz hint' => get a hint. 'quiz solve' => solve this question. 'quiz skip' => skip to next question. 'quiz joker' => draw a joker to win this round. 'quiz score [player]' => show score for [player] (default is yourself). 'quiz top5' => show top 5 players. 'quiz top <number>' => show top <number> players (max 50). 'quiz stats' => show some statistics. 'quiz fetch' => refetch questions from databases. 'quiz refresh' => refresh the question pool for this channel." + (urls.empty? ? "" : "\nYou can add new questions at #{urls.join(', ')}")
@@ -342,15 +370,24 @@ class QuizPlugin < Plugin
       stats = q.registry[nick]
 
       # Find player in table
+<<<<<<< HEAD
       old_rank = nil
       q.rank_table.each_with_index do |place, i|
         if nick.downcase == place[0].downcase
           old_rank = i
+=======
+      found_player = false
+      i = 0
+      q.rank_table.each_index do |i|
+        if nick.downcase == q.rank_table[i][0].downcase
+          found_player = true
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           break
         end
       end
 
       # Remove player from old position
+<<<<<<< HEAD
       if old_rank
         q.rank_table.delete_at( old_rank )
       end
@@ -361,22 +398,50 @@ class QuizPlugin < Plugin
         if stats.score > place[1].score
           q.rank_table[i,0] = [[nick, stats]]
           new_rank = i
+=======
+      if found_player
+        old_rank = i
+        q.rank_table.delete_at( i )
+      else
+        old_rank = nil
+      end
+
+      # Insert player at new position
+      inserted = false
+      q.rank_table.each_index do |i|
+        if stats.score > q.rank_table[i][1].score
+          q.rank_table[i,0] = [[nick, stats]]
+          inserted = true
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           break
         end
       end
 
       # If less than all other players' scores, append to table
+<<<<<<< HEAD
       unless new_rank
         new_rank = q.rank_table.length
+=======
+      unless inserted
+        i += 1 unless q.rank_table.empty?
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         q.rank_table << [nick, stats]
       end
 
       # Print congratulations/condolences if the player's rank has changed
+<<<<<<< HEAD
       if old_rank
         if new_rank < old_rank
           m.reply "#{nick} ascends to rank #{new_rank + 1}. Congratulations :)"
         elsif new_rank > old_rank
           m.reply "#{nick} slides down to rank #{new_rank + 1}. So Sorry! NOT. :p"
+=======
+      unless old_rank.nil?
+        if i < old_rank
+          m.reply "#{nick} ascends to rank #{i + 1}. Congratulations :)"
+        elsif i > old_rank
+          m.reply "#{nick} slides down to rank #{i + 1}. So Sorry! NOT. :p"
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         end
       end
     else
@@ -385,6 +450,7 @@ class QuizPlugin < Plugin
   end
 
 
+<<<<<<< HEAD
   def setup_ask_timer(m, q)
     chan = m.channel
     delay = q.registry_conf["autoask_delay"]
@@ -402,6 +468,8 @@ class QuizPlugin < Plugin
     end
   end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   # Reimplemented from Plugin
   #
   def message(m)
@@ -418,6 +486,7 @@ class QuizPlugin < Plugin
     # Support multiple alternate answers and cores
     answer = q.answers.find { |ans| ans.valid?(message) }
     if answer
+<<<<<<< HEAD
 
       # purge the autoskip timer
       @ask_mutex.synchronize do
@@ -427,6 +496,8 @@ class QuizPlugin < Plugin
         end
       end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       # List canonical answer which the hint was based on, to avoid confusion
       # FIXME display this more friendly
       answer.info = " (hints were for alternate answer #{q.canonical_answer.core})" if answer != q.canonical_answer and q.hinted
@@ -468,9 +539,26 @@ class QuizPlugin < Plugin
       calculate_ranks( m, q, nick)
 
       q.question = nil
+<<<<<<< HEAD
 
       if q.registry_conf['autoskip'] or q.registry_conf["autoask"]
         setup_ask_timer(m, q)
+=======
+      if q.registry_conf["autoask"]
+        delay = q.registry_conf["autoask_delay"]
+        if delay > 0
+          m.reply "#{Bold}#{Color}03Next question in #{Bold}#{delay}#{Bold} seconds"
+          timer = @bot.timer.add_once(delay) {
+            @ask_mutex.synchronize do
+              @waiting.delete(chan)
+            end
+            cmd_quiz( m, nil)
+          }
+          @waiting[chan] = timer
+        else
+          cmd_quiz( m, nil )
+        end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
     else
       # First try is used, and it wasn't the answer.
@@ -496,14 +584,26 @@ class QuizPlugin < Plugin
     chan = m.channel
 
     @ask_mutex.synchronize do
+<<<<<<< HEAD
       if @waiting.has_key?(chan) and @waiting[chan].last == :ask
+=======
+      if @waiting.has_key?(chan)
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         m.reply "Next quiz question will be automatically asked soon, have patience"
         return
       end
     end
 
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if q.question
       m.reply "#{Bold}#{Color}03Current question: #{Color}#{Bold}#{q.question}"
@@ -563,6 +663,7 @@ class QuizPlugin < Plugin
     q.hintrange = (0..q.hint.length-1).sort_by{ rand }
 
     m.reply "#{Bold}#{Color}03Question: #{Color}#{Bold}" + q.question
+<<<<<<< HEAD
 
     if q.registry_conf.key? 'autoskip'
       delay = q.registry_conf['autoskip_delay']
@@ -578,12 +679,15 @@ class QuizPlugin < Plugin
       end
       @waiting[chan] = [timer, :skip]
     end
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
 
   def cmd_solve( m, params )
     chan = m.channel
 
+<<<<<<< HEAD
     @ask_mutex.synchronize do
       if @waiting.has_key?(chan) and @waiting[chan].last == :skip
         m.reply _("you can't make me solve a quiz in autoskip mode, sorry")
@@ -591,6 +695,8 @@ class QuizPlugin < Plugin
       end
     end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     return unless @quizzes.has_key?( chan )
     q = @quizzes[chan]
 
@@ -598,7 +704,11 @@ class QuizPlugin < Plugin
 
     q.question = nil
 
+<<<<<<< HEAD
     cmd_quiz( m, nil ) if q.registry_conf["autoask"] or q.registry_conf["autoskip"]
+=======
+    cmd_quiz( m, nil ) if q.registry_conf["autoask"]
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
 
@@ -658,6 +768,7 @@ class QuizPlugin < Plugin
 
   def cmd_skip( m, params )
     chan = m.channel
+<<<<<<< HEAD
 
     @ask_mutex.synchronize do
       if @waiting.has_key?(chan) and @waiting[chan].last == :skip
@@ -666,6 +777,8 @@ class QuizPlugin < Plugin
       end
     end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     return unless @quizzes.has_key?(chan)
     q = @quizzes[chan]
 
@@ -677,8 +790,16 @@ class QuizPlugin < Plugin
   def cmd_joker( m, params )
     chan = m.channel
     nick = m.sourcenick.to_s
+<<<<<<< HEAD
     q = create_quiz(chan, m)
     return unless q
+=======
+    q = create_quiz(chan)
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if q.question == nil
       m.reply "#{nick}: There is no open question."
@@ -724,8 +845,16 @@ class QuizPlugin < Plugin
 
   def cmd_top5( m, params )
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if q.rank_table.empty?
       m.reply "There are no scores known yet!"
@@ -747,8 +876,16 @@ class QuizPlugin < Plugin
     num = params[:number].to_i
     return if num < 1 or num > 50
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     if q.rank_table.empty?
       m.reply "There are no scores known yet!"
@@ -789,6 +926,7 @@ class QuizPlugin < Plugin
 
   def cmd_autoask( m, params )
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
 
@@ -816,11 +954,30 @@ class QuizPlugin < Plugin
       end
     else
       m.reply "Invalid autoask parameter. Use 'on' or 'off' to set it, 'status' to check the current status."
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+
+    case params[:enable].downcase
+    when "on", "true"
+      q.registry_conf["autoask"] = true
+      m.reply "Enabled autoask mode."
+      cmd_quiz( m, nil ) if q.question == nil
+    when "off", "false"
+      q.registry_conf["autoask"] = false
+      m.reply "Disabled autoask mode."
+    else
+      m.reply "Invalid autoask parameter. Use 'on' or 'off'."
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 
   def cmd_autoask_delay( m, params )
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
 
@@ -919,6 +1076,28 @@ class QuizPlugin < Plugin
     q = create_quiz( chan, m )
     return unless q
 
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+
+    delay = params[:time].to_i
+    q.registry_conf["autoask_delay"] = delay
+    m.reply "Autoask delay now #{q.registry_conf['autoask_delay']} seconds"
+  end
+
+
+  def cmd_transfer( m, params )
+    chan = m.channel
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug q.rank_table.inspect
 
     source = params[:source]
@@ -976,8 +1155,16 @@ class QuizPlugin < Plugin
 
   def cmd_del_player( m, params )
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     debug q.rank_table.inspect
 
@@ -1014,9 +1201,17 @@ class QuizPlugin < Plugin
 
   def cmd_set_score(m, params)
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
 
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug q.rank_table.inspect
 
     nick = params[:nick]
@@ -1035,9 +1230,17 @@ class QuizPlugin < Plugin
 
   def cmd_set_jokers(m, params)
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
 
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug q.rank_table.inspect
 
     nick = params[:nick]
@@ -1055,8 +1258,16 @@ class QuizPlugin < Plugin
 
   def cmd_cleanup(m, params)
     chan = m.channel
+<<<<<<< HEAD
     q = create_quiz( chan, m )
     return unless q
+=======
+    q = create_quiz( chan )
+    if q.nil?
+      m.reply "Sorry, the quiz database for #{chan} seems to be corrupt"
+      return
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     null_players = []
     q.registry.each { |nick, player|
@@ -1077,7 +1288,11 @@ class QuizPlugin < Plugin
     if @quizzes.delete m.channel
       @ask_mutex.synchronize do
         t = @waiting.delete(m.channel)
+<<<<<<< HEAD
         @bot.timer.remove t.first if t
+=======
+        @bot.timer.remove t if t
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
       m.okay
     else
@@ -1106,10 +1321,15 @@ plugin.map 'quiz stats',            :action => 'cmd_stats'
 plugin.map 'quiz stop', :action => :stop
 
 # Admin commands
+<<<<<<< HEAD
 plugin.map 'quiz autoask [:enable]',  :action => 'cmd_autoask', :auth_path => 'edit'
 plugin.map 'quiz autoask delay *time',  :action => 'cmd_autoask_delay', :auth_path => 'edit'
 plugin.map 'quiz autoskip [:enable]',  :action => 'cmd_autoskip', :auth_path => 'edit'
 plugin.map 'quiz autoskip delay *time',  :action => 'cmd_autoskip_delay', :auth_path => 'edit'
+=======
+plugin.map 'quiz autoask :enable',  :action => 'cmd_autoask', :auth_path => 'edit'
+plugin.map 'quiz autoask delay :time',  :action => 'cmd_autoask_delay', :auth_path => 'edit', :requirements => {:time => /\d+/}
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 plugin.map 'quiz transfer :source :dest :score :jokers', :action => 'cmd_transfer', :auth_path => 'edit', :defaults => {:score => '-1', :jokers => '-1'}
 plugin.map 'quiz deleteplayer :nick', :action => 'cmd_del_player', :auth_path => 'edit'
 plugin.map 'quiz setscore :nick :score', :action => 'cmd_set_score', :auth_path => 'edit'
