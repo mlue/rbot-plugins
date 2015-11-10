@@ -33,16 +33,11 @@ module ::GeoIP
     raw = Irc::Utils.bot.httputil.get_response(url+ip)
     raw = raw.decompress_body(raw.raw_body)
 
-<<<<<<< HEAD
     regexes.each { |key, regex| res[key] = raw.scan(regex).join('') }
-=======
-    regexes.each { |key, regex| res[key] = Iconv.conv('utf-8', 'ISO-8859-1', raw.scan(regex).to_s) }
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     return res
   end
 
-<<<<<<< HEAD
   IPINFODB_URL = "http://api.ipinfodb.com/v2/ip_query.php?key=%{key}&ip=%{ip}"
 
   def self.ipinfodb(ip)
@@ -51,20 +46,6 @@ module ::GeoIP
     url = IPINFODB_URL % {
       :ip => ip,
       :key => key
-=======
-  def self.kapsi(ip)
-    url = "http://lakka.kapsi.fi:40086/lookup.yaml?host="
-    yaml = Irc::Utils.bot.httputil.get(url+ip)
-    return YAML::load(yaml)
-  end
-
-  IPINFODB_URL = "http://api.ipinfodb.com/v2/ip_query.php?key=%{key}&ip=%{ip}"
-
-  def self.ipinfodb(ip)
-    url = IPINFODB_URL % {
-      :ip => ip,
-      :key => Irc::Utils.bot.config['geoip.ipinfodb_key']
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     }
     debug "Requesting #{url}"
 
@@ -87,10 +68,6 @@ module ::GeoIP
 
   JUMP_TABLE = {
     "ipinfodb" => Proc.new { |ip| ipinfodb(ip) },
-<<<<<<< HEAD
-=======
-    "kapsi" => Proc.new { |ip| kapsi(ip) },
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     "geoiptool" => Proc.new { |ip| geoiptool(ip) },
   }
 
@@ -130,13 +107,8 @@ end
 
 class GeoIpPlugin < Plugin
   Config.register Config::ArrayValue.new('geoip.sources',
-<<<<<<< HEAD
       :default => [ "ipinfodb", "geoiptool" ],
       :desc => "Which API to use for lookups. Supported values: ipinfodb, geoiptool")
-=======
-      :default => [ "ipinfodb", "kapsi", "geoiptool" ],
-      :desc => "Which API to use for lookups. Supported values: ipinfodb, kapsi, geoiptool")
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   Config.register Config::StringValue.new('geoip.ipinfodb_key',
       :default => "",
       :desc => "API key for the IPinfoDB geolocation service")
@@ -208,23 +180,12 @@ class GeoIpPlugin < Plugin
       apis = @bot.config['geoip.sources']
       apis.compact.each { |api|
         geo = GeoIP::resolve(host, api)
-<<<<<<< HEAD
         if geo and geo[:country] != ""
           break
         end
       }
     rescue GeoIP::InvalidHostError, RuntimeError
       if nick
-=======
-        if geo[:country] != ""
-          break
-        end
-      }
-    rescue GeoIP::InvalidHostError, RuntimeError => e
-      if nick
-        p e.message
-        p $@.inspect
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         return _("%{nick}'s location could not be resolved") % { :nick => nick }
       else
         return _("%{host} could not be resolved") % { :host => host }

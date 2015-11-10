@@ -35,16 +35,7 @@ class Sed < Plugin
     oldstring = @amendlog[channel][source] 
     newstring = oldstring
     if m.message.match(/^s([\/|,!])(.*?)\1(.*?)\1(g?)/) then
-<<<<<<< HEAD
       target = Regexp.new($2)
-=======
-      begin
-        target = Regexp.new($2)
-      rescue
-        m.reply "BODEGA"
-        return 
-      end
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       replace_with = $3
       global = $4
       if (global == "")

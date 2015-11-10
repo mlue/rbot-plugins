@@ -27,15 +27,12 @@ class UrlPlugin < Plugin
   Config.register Config::BooleanValue.new('url.first_par',
     :default => false,
     :desc => "Also try to get the first paragraph of a web page")
-<<<<<<< HEAD
   Config.register Config::IntegerValue.new('url.first_par_length',
     :default => 150,
     :desc => "The max length of the first paragraph")
   Config.register Config::ArrayValue.new('url.first_par_whitelist',
     :default => ['twitter.com'],
     :desc => "List of url patterns to show the content for.")
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   Config.register Config::BooleanValue.new('url.info_on_list',
     :default => false,
     :desc => "Show link info when listing/searching for urls")
@@ -102,10 +99,6 @@ class UrlPlugin < Plugin
     begin
       debug "+ getting info for #{url.request_uri}"
       info = @bot.filter(:htmlinfo, url)
-<<<<<<< HEAD
-=======
-      debug info
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       logopts[:htmlinfo] = info
       resp = info[:headers]
 
@@ -113,7 +106,6 @@ class UrlPlugin < Plugin
 
       if info[:content]
         logopts[:extra] = info[:content]
-<<<<<<< HEAD
 
         max_length = @bot.config['url.first_par_length']
 
@@ -131,9 +123,6 @@ class UrlPlugin < Plugin
         end
 
         extra << "#{Bold}text#{Bold}: #{content}" if @bot.config['url.first_par'] and content
-=======
-        extra << "#{Bold}text#{Bold}: #{info[:content]}" if @bot.config['url.first_par']
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       else
         logopts[:extra] = String.new
         logopts[:extra] << "Content Type: #{resp['content-type']}"
@@ -208,10 +197,7 @@ class UrlPlugin < Plugin
         debug "Title #{title ? '' : 'not '} found"
         reply = "#{LINK_INFO} #{title}" if title
       rescue => e
-<<<<<<< HEAD
         debug e
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         # we might get a 404 because of trailing punctuation, so we try again
         # with the last character stripped. this might generate invalid URIs
         # (e.g. because "some.url" gets chopped to some.url%2, so catch that too
@@ -228,11 +214,7 @@ class UrlPlugin < Plugin
             debug "Not retrying #{unescaped}"
           end
         end
-<<<<<<< HEAD
         reply = "Error #{e.message}"
-=======
-        #reply = "Error #{e.message}"
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
 
       if display_info > urls_displayed

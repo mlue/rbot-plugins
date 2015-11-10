@@ -211,7 +211,6 @@ class UnoGame
     @bot.notice player.user, msg, opts
   end
 
-<<<<<<< HEAD
   def notify_error(player, msg, opts={})
     announce _("you can't do that, %{p}") % {
       :p => player.user
@@ -219,8 +218,6 @@ class UnoGame
     notify player, msg, opts
   end
 
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   def make_base_stock
     @base_stock = COLORS.inject([]) do |list, clr|
       VALUES.each do |n|
@@ -247,10 +244,7 @@ class UnoGame
   end
 
   def start_game
-<<<<<<< HEAD
     @join_timer = nil
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug "Starting game"
     @players.shuffle!
     show_order
@@ -337,7 +331,6 @@ class UnoGame
     else
       @special = false
     end
-<<<<<<< HEAD
   end
 
   def next_turn(opts={})
@@ -345,15 +338,6 @@ class UnoGame
     @players << @players.shift
     @player_has_picked = false
     show_turn unless opts[:silent]
-=======
-    @must_play = nil
-  end
-
-  def next_turn(opts={})
-    @players << @players.shift
-    @player_has_picked = false
-    show_turn
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def can_play(card)
@@ -398,11 +382,7 @@ class UnoGame
   def play_card(source, cards)
     debug "Playing card #{cards}"
     p = get_player(source)
-<<<<<<< HEAD
     shorts = cards.gsub(/\s+/,'').match(/^(?:([rbgy]\+?\d)\1?|([rbgy][rs])|(w(?:\+4)?)([rbgy])?)$/).to_a
-=======
-    shorts = cards.gsub(/\s+/,'').match(/^(?:([rbgy]\+?\d){1,2}|([rbgy][rs])|(w(?:\+4)?)([rbgy])?)$/).to_a
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug shorts.inspect
     if shorts.empty?
       announce _("what cards were that again?")
@@ -418,7 +398,6 @@ class UnoGame
       toplay = (full == short) ? 1 : 2
     end
     debug [full, short, jolly, jcolor, toplay].inspect
-<<<<<<< HEAD
     # r7r7 -> r7r7, r7, nil, nil, 2
     # r7 -> r7, r7, nil, nil, 1
     # w -> w, nil, w, nil, 1
@@ -441,16 +420,6 @@ class UnoGame
       debug cards
       unless can_play(cards.first)
         notify_error p, _("you can't play that card")
-=======
-    # r7r7 -> r7r7, r7, nil, nil
-    # r7 -> r7, r7, nil, nil
-    # w -> w, nil, w, nil
-    # wg -> wg, nil, w, g
-    if cards = p.has_card?(short)
-      debug cards
-      unless can_play(cards.first)
-        announce _("you can't play that card")
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         return
       end
       if cards.length >= toplay
@@ -504,17 +473,10 @@ class UnoGame
           announce _("%{p}, choose a color with: co r|b|g|y") % { :p => p }
         end
       else
-<<<<<<< HEAD
         notify_error p, _("you don't have two cards of that kind")
       end
     else
       notify_error p, _("you don't have that card")
-=======
-        announce _("you don't have two cards of that kind")
-      end
-    else
-      announce _("you don't have that card")
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 
@@ -536,10 +498,7 @@ class UnoGame
     lp.cards.each do |c|
       if c.color == @last_color and not c.special?
         legal = false
-<<<<<<< HEAD
         break
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
     end
     if legal
@@ -556,11 +515,7 @@ class UnoGame
       announce _("%{lp}'s move was %{b}not%{b} legal, %{lp} must pick %{b}%{n}%{b} cards and play again!") % {
         :cp => cp, :lp => lp, :b => Bold, :n => @picker
       }
-<<<<<<< HEAD
       played = @discard # store the misplayed W+4
-=======
-      lp.cards << @discard # put the W+4 back in place
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
       # reset the discard
       @color = @last_color.dup
@@ -572,14 +527,10 @@ class UnoGame
 
       # force the player to play the current cards
       @must_play = lp.cards.dup
-<<<<<<< HEAD
       # but not the same (type of) card he misplayed, though
       @must_play.delete(played)
 
       lp.cards << played # reinstate the W+4 in the list of player cards
-=======
-
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       # give him the penalty cards
       deal(lp, @picker)
       @picker = 0
@@ -597,13 +548,10 @@ class UnoGame
       }
       deal(p, @picker)
       @picker = 0
-<<<<<<< HEAD
       # make sure that if this is the "pick and pass" after a W+4,
       # then the following player cannot do a challenge:
       @last_discard = nil
       @last_color = nil
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     else
       if @player_has_picked
         announce _("%{p} passes turn") % { :p => p }
@@ -660,15 +608,12 @@ class UnoGame
   end
 
   def show_turn(opts={})
-<<<<<<< HEAD
     if @players.empty?
       announce _("nobody is playing %{uno} yet!") % {
         :uno => UNO
       }
       return false
     end
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     cards = true
     cards = opts[:cards] if opts.key?(:cards)
     player = @players.first
@@ -753,7 +698,6 @@ class UnoGame
         return
       end
     end
-<<<<<<< HEAD
     if @last_discard
       announce _("you can't join now, %{p}, a %{card} was just played, wait until next turn") % {
         :card => @discard,
@@ -761,8 +705,6 @@ class UnoGame
       }
       return
     end
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     cards = 7
     if @start_time
       cards = (@players.inject(0) do |s, pl|
@@ -800,7 +742,6 @@ class UnoGame
     }
     case @players.length
     when 2
-<<<<<<< HEAD
       if @join_timer
         @bot.timer.remove(@join_timer)
         announce _("game start countdown stopped")
@@ -813,13 +754,6 @@ class UnoGame
         end_game
         return
       end
-=======
-      if p == @players.first
-        next_turn
-      end
-      end_game
-      return
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     when 1
       end_game(true)
       return
@@ -835,7 +769,6 @@ class UnoGame
   def replace_player(old, new)
     # The new user
     user = channel.get_user(new)
-<<<<<<< HEAD
     if not user
       announce _("there is no '%{nick}' here") % {
         :nick => new
@@ -847,13 +780,6 @@ class UnoGame
         :p => pl, :uno => UNO
       }
       return false
-=======
-    if p = get_player(user)
-      announce _("%{p} is already playing %{uno} here") % {
-        :p => p, :uno => UNO
-      }
-      return
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
     # We scan the player list of the player with the old nick, instead
     # of using get_player, in case of IRC drops etc
@@ -863,32 +789,22 @@ class UnoGame
         announce _("%{p} takes %{b}%{old}%{b}'s place at %{uno}") % {
           :p => p, :b => Bold, :old => old, :uno => UNO
         }
-<<<<<<< HEAD
         return true
-=======
-        return
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
     end
     announce _("%{b}%{old}%{b} isn't playing %{uno} here") % {
       :uno => UNO, :b => Bold, :old => old
     }
-<<<<<<< HEAD
     return false
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def end_game(halted = false)
     runtime = @start_time ? Time.now -  @start_time : 0
-<<<<<<< HEAD
     if @join_timer
       @bot.timer.remove(@join_timer)
       announce _("game start countdown stopped")
       @join_timer = nil
     end
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     if halted
       if @start_time
         announce _("%{uno} game halted after %{time}") % {
@@ -918,21 +834,12 @@ class UnoGame
       deal(p, @picker)
       @picker = 0
     end
-<<<<<<< HEAD
     score = @players.inject(0) do |sum, pl|
       if pl.cards.length > 0
         announce _("%{p} still had %{cards}") % {
           :p => pl, :cards => pl.cards.join(' ')
         }
         sum += pl.cards.inject(0) do |cs, c|
-=======
-    score = @players.inject(0) do |sum, p|
-      if p.cards.length > 0
-        announce _("%{p} still had %{cards}") % {
-          :p => p, :cards => p.cards.join(' ')
-        }
-        sum += p.cards.inject(0) do |cs, c|
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           cs += c.score
         end
       end

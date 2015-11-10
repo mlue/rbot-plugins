@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 define_structure :RouletteHistory, :games, :shots, :deaths, :misses, :wins, :points
-=======
-define_structure :RouletteHistory, :games, :shots, :deaths, :misses, :wins
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
 class RoulettePlugin < Plugin
   Config.register Config::BooleanValue.new('roulette.autospin',
@@ -41,22 +37,14 @@ class RoulettePlugin < Plugin
     if @registry.has_key?("player " + m.sourcenick)
       playerdata = @registry["player " + m.sourcenick]
     else
-<<<<<<< HEAD
       playerdata = RouletteHistory.new(0,0,0,0,0,0)
-=======
-      playerdata = RouletteHistory.new(0,0,0,0,0)
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
 
     totals = nil
     if @registry.has_key?("totals")
       totals = @registry["totals"]
     else
-<<<<<<< HEAD
       totals = RouletteHistory.new(0,0,0,0,0,0)
-=======
-      totals = RouletteHistory.new(0,0,0,0,0)
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
 
     if @last == m.sourcenick and not @bot.config['roulette.twice_in_a_row']
@@ -73,14 +61,9 @@ class RoulettePlugin < Plugin
     totals.shots += 1
 
     shot = @chambers.pop
-<<<<<<< HEAD
     chamberNo = 6 - @chambers.length
     if shot
       m.reply "#{m.sourcenick}: chamber #{chamberNo} of 6 => *BANG*"
-=======
-    if shot
-      m.reply "#{m.sourcenick}: chamber #{6 - @chambers.length} of 6 => *BANG*"
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       playerdata.deaths += 1
       totals.deaths += 1
       @players.each {|plyr|
@@ -95,14 +78,9 @@ class RoulettePlugin < Plugin
       @last = ''
       @bot.kick(m.replyto, m.sourcenick, "*BANG*") if @bot.config['roulette.kick']
     else
-<<<<<<< HEAD
       m.reply "#{m.sourcenick}: chamber #{chamberNo} of 6 => +click+"
       playerdata.misses += 1
       playerdata.points += 2**chamberNo
-=======
-      m.reply "#{m.sourcenick}: chamber #{6 - @chambers.length} of 6 => +click+"
-      playerdata.misses += 1
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       totals.misses += 1
     end
 
@@ -130,11 +108,7 @@ class RoulettePlugin < Plugin
     if @registry.has_key?("totals")
       totals = @registry["totals"]
     else
-<<<<<<< HEAD
       totals = RouletteHistory.new(0,0,0,0,0,0)
-=======
-      totals = RouletteHistory.new(0,0,0,0,0)
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
 
     @players.each {|plyr|
@@ -244,7 +218,6 @@ class RoulettePlugin < Plugin
       m.reply "roulette stats: #{total_games} games completed, #{total_shots} shots fired at #{total_players} players. Luckiest: #{h_luck_percent[0].join(',')} (#{sprintf '%.1f', h_luck_percent[1]}% clicks). Unluckiest: #{l_luck_percent[0].join(',')} (#{sprintf '%.1f', l_luck_percent[1]}% clicks). Highest survival rate: #{h_win_percent[0].join(',')} (#{sprintf '%.1f', h_win_percent[1]}%). Lowest survival rate: #{l_win_percent[0].join(',')} (#{sprintf '%.1f', l_win_percent[1]}%). Most wins: #{won_most[0].join(',')} (#{won_most[1]}). Most deaths: #{died_most[0].join(',')} (#{died_most[1]})."
     end
   end
-<<<<<<< HEAD
 
   # Figure out who the winnar is!
   def hof(m, params)
@@ -272,8 +245,6 @@ class RoulettePlugin < Plugin
     end
     m.reply(winners.join(" | "))
   end
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 end
 
 plugin = RoulettePlugin.new
@@ -285,9 +256,6 @@ plugin.map 'roulette spin', :action => 'spin'
 plugin.map 'roulette stats :player', :action => 'playerstats'
 plugin.map 'roulette stats', :action => 'stats'
 plugin.map 'roulette clearstats', :action => 'clearstats'
-<<<<<<< HEAD
 plugin.map 'roulette hof :key', :action => 'hof', :defaults => {:key => "points"}, :requirements => {:key => /^(?:games|shots|deaths|misses|wins|points)$/}
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 plugin.map 'roulette'
 

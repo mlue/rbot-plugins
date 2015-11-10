@@ -111,90 +111,9 @@ class Translator
   end
 end
 
-<<<<<<< HEAD
 class GoogleTranslator < Translator
   INFO = 'Google Translate <http://www.google.com/translate_t>'
   URL = 'https://translate.google.com/'
-=======
-
-class NiftyTranslator < Translator
-  INFO = '@nifty Translation <http://nifty.amikai.com/amitext/indexUTF8.jsp>'
-
-  def initialize(cache={})
-   require 'mechanize'
-   super(Translator::Direction.all_from_to(%w[ja en zh_CN ko], %w[ja]), cache)
-  end
-
-  def do_translate(text, from, to)
-    @form ||= mechanize.new.
-              get('http://nifty.amikai.com/amitext/indexUTF8.jsp').
-              forms_with(:name => 'translateForm').last
-    @radio = @form.radiobuttons_with(:name => 'langpair').first
-    @radio.value = "#{from},#{to}".upcase
-    @radio.check
-    @form.fields_with(:name => 'sourceText').last.value = text
-
-    @form.submit(@form.buttons_with(:name => 'translate').last).
-          forms_with(:name => 'translateForm').last.fields_with(:name => 'translatedText').last.value
-  end
-end
-
-
-class ExciteTranslator < Translator
-  INFO = 'Excite.jp Translation <http://www.excite.co.jp/world/>'
-
-  def initialize(cache={})
-    require 'mechanize'
-    require 'iconv'
-
-    super(Translator::Direction.all_from_to(%w[ja en zh_CN zh_TW ko], %w[ja]), cache)
-
-    @forms = Hash.new do |h, k|
-      case k
-      when 'en'
-        h[k] = open_form('english')
-      when 'zh_CN', 'zh_TW'
-        # this way we don't need to fetch the same page twice
-        h['zh_CN'] = h['zh_TW'] = open_form('chinese')
-      when 'ko'
-        h[k] = open_form('korean')
-      end
-    end
-  end
-
-  def open_form(name)
-    mechanize.new.get("http://www.excite.co.jp/world/#{name}").
-                   forms_with(:name => 'world').first
-  end
-
-  def do_translate(text, from, to)
-    non_ja_language = from != 'ja' ? from : to
-    form = @forms[non_ja_language]
-
-    if non_ja_language =~ /zh_(CN|TW)/
-      form_with_fields(:name => 'wb_lp').first.value = "#{from}#{to}".sub(/_(?:CN|TW)/, '').upcase
-      form_with_fields(:name => 'big5').first.value = ($1 == 'TW' ? 'yes' : 'no')
-    else
-      # the en<->ja page is in Shift_JIS while other pages are UTF-8
-      text = Iconv.iconv('Shift_JIS', 'UTF-8', text) if non_ja_language == 'en'
-      form.fields_with(:name => 'wb_lp').first.value = "#{from}#{to}".upcase
-    end
-    form.fields_with(:name => 'before').first.value = text
-    result = form.submit.forms_with(:name => 'world').first.fields_with(:name => 'after').first.value
-    # the en<->ja page is in Shift_JIS while other pages are UTF-8
-    if non_ja_language == 'en'
-      Iconv.iconv('UTF-8', 'Shift_JIS', result)
-    else
-      result
-    end
-
-  end
-end
-
-
-class GoogleTranslator < Translator
-  INFO = 'Google Translate <http://www.google.com/translate_t>'
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
   LANGUAGES =
     %w[af sq am ar hy az eu be bn bh bg my ca chr zh zh_CN zh_TW hr
@@ -203,17 +122,11 @@ class GoogleTranslator < Translator
     pt_PT pa ro ru sa sr sd si sk sl es sw sv tg ta tl te th bo tr
     uk ur uz ug vi cy yi auto]
   def initialize(cache={})
-<<<<<<< HEAD
     require 'mechanize'
-=======
-    require "uri"
-    require "json"
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     super(Translator::Direction.all_to_all(LANGUAGES), cache)
   end
 
   def do_translate(text, from, to)
-<<<<<<< HEAD
     agent = Mechanize.new
     agent.user_agent_alias = 'Linux Mozilla'
     page = agent.get URL
@@ -235,67 +148,10 @@ class YandexTranslator < Translator
   def initialize(cache)
     require 'uri'
     require 'json'
-=======
-    langpair = [from == 'auto' ? '' : from, to].map { |e| e.tr('_', '-') }.join("|")
-    raw_json = Irc::Utils.bot.httputil.get_response(URI.escape(
-               "http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=#{text}&langpair=#{langpair}")).body
-    response = JSON.parse(raw_json)
-
-    if response["responseStatus"] != 200
-      raise Translator::NoTranslationError, response["responseDetails"]
-    else
-      translation = response["responseData"]["translatedText"]
-      return Utils.decode_html_entities(translation)
-    end
-  end
-end
-
-
-class BabelfishTranslator < Translator
-  INFO = 'AltaVista Babel Fish Translation <http://babelfish.altavista.com/babelfish/>'
-
-  def initialize(cache)
-    require 'mechanize'
-    (_, lang_list) = parse_page
-    language_pairs = lang_list.options.map {|o| o.value.split('_')}.
-                                           reject {|p| p.empty?}
-    super(Translator::Direction.pairs(language_pairs), cache)
-  end
-
-  def parse_page
-    form = mechanize.new.get('http://babelfish.altavista.com/babelfish/').
-           forms_with(:name => 'frmTrText').first
-    lang_list = form.fields_with(:name => 'lp').first
-    [form, lang_list]
-  end
-
-  def do_translate(text, from, to)
-    unless @form && @lang_list
-      @form, @lang_list = parse_page
-    end
-    
-    if @form.fields_with(:name => 'trtext').empty?
-      @form.add_field!('trtext', text)
-    else
-      @form.fields_with(:name => 'trtext').first.value = text
-    end
-    @lang_list.value = "#{from}_#{to}"
-    @form.submit.parser.search("div[@id='result']/div[@style]").inner_html
-  end
-end
-
-class WorldlingoTranslator < Translator
-  INFO = 'WorldLingo Free Online Translator <http://www.worldlingo.com/en/products_services/worldlingo_translator.html>'
-
-  LANGUAGES = %w[en fr de it pt es ru nl el sv ar ja ko zh_CN zh_TW]
-  def initialize(cache)
-    require 'uri'
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     super(Translator::Direction.all_to_all(LANGUAGES), cache)
   end
 
   def translate(text, from, to)
-<<<<<<< HEAD
     res = Irc::Utils.bot.httputil.get_response(URL % [KEY, from, to, URI.escape(text)])
     res = JSON.parse(res.body)
 
@@ -306,18 +162,6 @@ class WorldlingoTranslator < Translator
     end
   end
 
-=======
-    response = Irc::Utils.bot.httputil.get_response(URI.escape(
-               "http://www.worldlingo.com/SEfpX0LV2xIxsIIELJ,2E5nOlz5RArCY,/texttranslate?wl_srcenc=utf-8&wl_trgenc=utf-8&wl_text=#{text}&wl_srclang=#{from.upcase}&wl_trglang=#{to.upcase}"))
-    # WorldLingo seems to respond an XML when error occurs
-    case response['Content-Type']
-    when %r'text/plain'
-      response.body
-    else
-      raise Translator::NoTranslationError
-    end
-  end
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 end
 
 class TranslatorPlugin < Plugin
@@ -329,16 +173,8 @@ class TranslatorPlugin < Plugin
     :desc => _("Default destination language to be used with translate command"))
 
   TRANSLATORS = {
-<<<<<<< HEAD
     'google_translate' => GoogleTranslator,
     'yandex' => YandexTranslator,
-=======
-    'nifty' => NiftyTranslator,
-    'excite' => ExciteTranslator,
-    'google_translate' => GoogleTranslator,
-    'babelfish' => BabelfishTranslator,
-    'worldlingo' => WorldlingoTranslator,
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   }
 
   def initialize
@@ -365,11 +201,8 @@ class TranslatorPlugin < Plugin
     begin
       yield
     rescue Exception
-<<<<<<< HEAD
       debug 'Translator error: '+$!.to_s
       debug $@.join("\n")
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       @failed_translators << { :name => name, :reason => $!.to_s }
 
       warning _("Translator %{name} cannot be used: %{reason}") %

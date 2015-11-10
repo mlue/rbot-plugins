@@ -392,11 +392,7 @@ class RSSFeedsPlugin < Plugin
           # do nothing
         else
           warning "ignoring #{v.inspect} wrapping of unknown class"
-<<<<<<< HEAD
         end unless ss[nk].nil?
-=======
-        end
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       else
         subs[k] = v
       end
