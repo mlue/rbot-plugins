@@ -183,12 +183,6 @@ class MarkovPlugin < Plugin
     @upgrade_queue.push nil
 
     @upgrade_thread = Thread.new do
-<<<<<<< HEAD
-      @registry.recovery = Proc.new { |val|
-        return [val]
-      }
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       logfile = File.open(@bot.path('markov-conversion.log'), 'a')
       logfile.puts "=== conversion thread started #{Time.now} ==="
       while k = @upgrade_queue.pop
@@ -205,10 +199,6 @@ class MarkovPlugin < Plugin
       end
       logfile.puts "=== conversion thread stopped #{Time.now} ==="
       logfile.close
-<<<<<<< HEAD
-      @registry.recovery = nil
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
     @upgrade_thread.priority = -1
   end
@@ -372,17 +362,8 @@ class MarkovPlugin < Plugin
       else
         "markov chat => try to say something intelligent"
       end
-<<<<<<< HEAD
-    when "learn"
-      ["markov learn from <file> [testing [<num> lines]] [using pattern <pattern>]:",
-       "learn from the text in the specified <file>, optionally using the given <pattern> to filter the text.",
-       "you can sample what would be learned by specifying 'testing <num> lines'"].join(' ')
-    else
-      "markov plugin: listens to chat to build a markov chain, with which it can (perhaps) attempt to (inanely) contribute to 'discussion'. Sort of.. Will get a *lot* better after listening to a lot of chat. Usage: 'chat' to attempt to say something relevant to the last line of chat, if it can -- help topics: ignore, readonly, delay, status, probability, chat, chat about, learn"
-=======
     else
       "markov plugin: listens to chat to build a markov chain, with which it can (perhaps) attempt to (inanely) contribute to 'discussion'. Sort of.. Will get a *lot* better after listening to a lot of chat. Usage: 'chat' to attempt to say something relevant to the last line of chat, if it can -- help topics: ignore, readonly, delay, status, probability, chat, chat about"
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 

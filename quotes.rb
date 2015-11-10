@@ -239,10 +239,7 @@ class QuotePlugin < Plugin
 
   def cmd_listquotes(m, p)
     channel = p[:channel] || m.channel.to_s
-<<<<<<< HEAD
-=======
     debug(m)
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     reg = p[:reg].to_s
     if quotes = listquotes(m.source, channel, reg)
       m.reply _("%{total} quotes matching %{reg} found: %{list}") % {
