@@ -15,11 +15,7 @@ class Imdb
   IMDB = "http://www.imdb.com"
   TITLE_OR_NAME_MATCH = /<a\s+href="(\/(?:title|name)\/(?:tt|nm)[0-9]+\/?)[^"]*"(?:[^>]*)>([^<]*)<\/a>/
   TITLE_MATCH = /<a\s+href="(\/title\/tt[0-9]+\/?)[^"]*"(?:[^>]*)>([^<]*)<\/a>/
-<<<<<<< HEAD
-  NAME_MATCH = /<a\s+onclick="[^"]+"\s+href="(\/name\/nm[0-9]+\/?)[^"]*"(?:[^>]*)>([^<]*)<\/a>/
-=======
   NAME_MATCH = /<a\s+href="(\/name\/nm[0-9]+\/?)[^"]*"(?:[^>]*)>([^<]*)<\/a>/
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   CHAR_MATCH = /<a\s+href="(\/character\/ch[0-9]+\/?)[^"]*"(?:[^>]*)>([^<]*)<\/a>/
   CREDIT_NAME_MATCH = /#{NAME_MATCH}\s*<\/td>\s*<td[^>]+>\s*\.\.\.\s*<\/td>\s*<td[^>]+>\s*(.+?)\s*<\/td>/m
   FINAL_ARTICLE_MATCH = /, ([A-Z]\S{0,2})$/
@@ -37,17 +33,8 @@ class Imdb
   end
 
   def search(rawstr, rawopts={})
-<<<<<<< HEAD
-    # allow the user to search directly for (movie) IDs
-    if rawstr.match /$tt\d+^/ then
-      return ["/movie/#{rawstr}/"]
-    end
-    str = CGI.escape(rawstr)
-    str << "&site=aka" if @bot.config['imdb.aka']
-=======
     str = CGI.escape(rawstr)
     str << ";site=aka" if @bot.config['imdb.aka']
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     opts = rawopts.dup
     opts[:type] = :both unless opts[:type]
     return do_search(str, opts)
@@ -141,11 +128,6 @@ class Imdb
   def info_title(sr, opts={})
     resp = nil
     begin
-<<<<<<< HEAD
-      # movie urls without tailing / trigger a redirect
-      sr += '/' if sr[-1,1] != '/'
-=======
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       resp = @bot.httputil.get_response(IMDB + sr, :max_redir => -1)
     rescue Exception => e
       error e.message
@@ -193,20 +175,6 @@ class Imdb
       end
 
       ratings = "no votes"
-<<<<<<< HEAD
-      # parse imdb rating value:
-      if resp.body.match(/itemprop="ratingValue">([^<]+)</)
-        ratings = "#{$1}/10"
-      end
-      # parse imdb rating count:
-      if resp.body.match(/itemprop="ratingCount">([^<]+)</)
-        ratings += " (#{$1} voters)"
-      end
-
-      genre = Array.new
-      resp.body.scan(/<a\s+href="\/genre\/[^\?]+\?[^"]+"\s+>([^<]+)<\/a>/) do |gnr|
-        genre << gnr.first.strip
-=======
       m = resp.body.match(/Users rated this ([0-9.]+)\/10 \(([0-9,]+) votes\)/m)
       if m
         ratings = "#{m[1]}/10 (#{m[2]} voters)"
@@ -215,7 +183,6 @@ class Imdb
       genre = Array.new
       resp.body.scan(/<a href="\/genre\/[^"]+"[^>]+>([^<]+)<\/a>/) do |gnr|
         genre << gnr
->>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       end
 
       plot = resp.body.match(DESC_MATCH)[3] rescue nil
