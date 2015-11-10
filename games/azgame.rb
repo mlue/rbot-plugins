@@ -145,7 +145,11 @@ class AzGamePlugin < Plugin
       :good => /(?:singular )?noun|verb|adj/,
       :first => 'abacus',
       :last => 'zuni',
+<<<<<<< HEAD
       :url => "http://www.chambers.co.uk/search.php?query=%s&title=21st",
+=======
+      :url => "http://www.chambersharrap.co.uk/chambers/features/chref/chref.py/main?query=%s&title=21st",
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       :listener => /^[a-z]+$/
     },
     }
@@ -560,7 +564,10 @@ class AzGamePlugin < Plugin
         debug "getting random word from dictionary, matching #{random}"
         p = @bot.httputil.get(rules[:url] % CGI.escape(random))
         debug p
+<<<<<<< HEAD
         raise 'unable to get search results' if not p.match /id="fullsearchresults"/i
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         lemmi = Array.new
         good = rules[:good]
         # We look for a lemma composed by a single word and of length at least two
@@ -610,6 +617,7 @@ class AzGamePlugin < Plugin
   end
 
 end
+<<<<<<< HEAD
 
 plugin = AzGamePlugin.new
 plugin.map 'az [:lang] word :cmd *params', :action=>'wordlist', :defaults => { :lang => nil, :cmd => 'count', :params => [] }, :auth_path => '!az::edit!'
@@ -617,3 +625,12 @@ plugin.map 'az cancel', :action=>'stop_game', :private => false
 plugin.map 'az check :word', :action => 'manual_word_check', :private => false
 plugin.map 'az [play] [:lang] [autoadd :addlang]', :action=>'start_game', :private => false, :defaults => { :lang => nil, :addlang => nil }
 
+=======
+#
+#plugin = AzGamePlugin.new
+#plugin.map 'az [:lang] word :cmd *params', :action=>'wordlist', :defaults => { :lang => nil, :cmd => 'count', :params => [] }, :auth_path => '!az::edit!'
+#plugin.map 'az cancel', :action=>'stop_game', :private => false
+#plugin.map 'az check :word', :action => 'manual_word_check', :private => false
+#plugin.map 'az [play] [:lang] [autoadd :addlang]', :action=>'start_game', :private => false, :defaults => { :lang => nil, :addlang => nil }
+#
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20

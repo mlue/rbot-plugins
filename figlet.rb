@@ -106,7 +106,11 @@ class FigletPlugin < Plugin
   def figlet(m, params)
     key = params[:plugin] || m.plugin.intern
     unless @has[key]
+<<<<<<< HEAD
       m.reply("%{cmd} couldn't be found. if it's installed, you should set the %{cmd}.path config key to its path" % {
+=======
+      m.reply("No %{cmd} for you spammer! Evil arkeus ruined figlet for everyone." % {
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         :cmd => key
       })
       return

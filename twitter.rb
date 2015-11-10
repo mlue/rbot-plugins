@@ -6,7 +6,10 @@
 # Author:: Carter Parks (carterparks) <carter@carterparks.com>
 # Author:: Giuseppe "Oblomov" Bilotta <giuseppe.bilotta@gmail.com>
 # Author:: NeoLobster <neolobster@snugglenets.com>
+<<<<<<< HEAD
 # Author:: Matthias Hecker <apoc@sixserv.org>
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 #
 # Copyright:: (C) 2007 Carter Parks
 # Copyright:: (C) 2007 Giuseppe Bilotta
@@ -14,6 +17,7 @@
 # Users can setup their twitter username and password and then begin updating
 # twitter whenever
 
+<<<<<<< HEAD
 require 'oauth'
 require 'oauth2'
 require 'yaml'
@@ -72,10 +76,42 @@ class TwitterPlugin < Plugin
     rescue
     end
   end
+=======
+begin
+  require 'oauth'
+rescue LoadError
+  error "OAuth module could not be loaded, twits will not be submitted and protected twits will not be accessible"
+end
+
+require 'yaml'
+require 'rexml/rexml'
+
+class TwitterPlugin < Plugin
+   Config.register Config::StringValue.new('twitter.key',
+      :default => "",
+      :desc => "Twitter OAuth Consumer Key")
+
+   Config.register Config::StringValue.new('twitter.secret',
+      :default => "",
+      :desc => "Twitter OAuth Consumer Secret")
+
+    Config.register Config::IntegerValue.new('twitter.status_count',
+      :default => 1, :validate => Proc.new { |v| v > 0 && v <= 10},
+      :desc => "Maximum number of status updates shown by 'twitter status'")
+
+    Config.register Config::IntegerValue.new('twitter.friends_status_count',
+      :default => 3, :validate => Proc.new { |v| v > 0 && v <= 10},
+      :desc => "Maximum number of status updates shown by 'twitter friends status'")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
   def initialize
     super
 
+<<<<<<< HEAD
+=======
+    @has_oauth = defined? OAuth
+
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     class << @registry
       def store(val)
         val
@@ -84,6 +120,7 @@ class TwitterPlugin < Plugin
         val
       end
     end
+<<<<<<< HEAD
 
     # setup the application authentication
 
@@ -97,6 +134,12 @@ class TwitterPlugin < Plugin
     debug "app access-token generated: #{@app_access_token.inspect}"
 
     @bot.register_filter(:twitter, :htmlinfo) { |s| twitter_filter(s) }
+=======
+  end
+
+  def report_oauth_missing(m, failed_action)
+    m.reply [failed_action, "I cannot authenticate to Twitter (OAuth not available)"].join(' because ')
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def report_key_missing(m, failed_action)
@@ -104,6 +147,7 @@ class TwitterPlugin < Plugin
   end
 
   def help(plugin, topic="")
+<<<<<<< HEAD
     return "twitter status [nick] => show nick's (or your) status, use 'twitter [home/mentions/retweets] status' to show your timeline | twitter update [status] => updates your status on twitter | twitter authorize => Generates an authorization URL which will give you a PIN to authorize the bot to use your twitter account. | twitter pin [pin] => Finishes bot authorization using the PIN provided by the URL from twitter authorize. | twitter deauthorize => Makes the bot forget your Twitter account. | twitter actions [on|off] => enable/disable twitting of actions (/me does ...)"
   end
 
@@ -124,10 +168,36 @@ class TwitterPlugin < Plugin
     end
 
     if not nick and not type
+=======
+    return "twitter status [nick] => show nick's (or your) status, use 'twitter friends status [nick]' to also show the friends' timeline | twitter update [status] => updates your status on twitter | twitter authorize => Generates an authorization URL which will give you a PIN to authorize the bot to use your twitter account. | twitter pin [pin] => Finishes bot authorization using the PIN provided by the URL from twitter authorize. | twitter deauthorize => Makes the bot forget your Twitter account. | twitter actions [on|off] => enable/disable twitting of actions (/me does ...)"
+  end
+
+  # update the status on twitter
+  def get_status(m, params)
+    friends = params[:friends]
+
+    if @registry.has_key?(m.sourcenick + "_access_token")
+      @access_token = YAML::load(@registry[m.sourcenick + "_access_token"])
+      nick = params[:nick] || @access_token.params[:screen_name]
+    else
+      if friends
+        if @has_oauth
+          m.reply "You are not authorized with Twitter. Please use 'twitter authorize' first to use this feature."
+        else
+          report_oauth_missing(m, "I cannot retrieve your friends status")
+        end
+        return false
+      end
+      nick = params[:nick]
+    end
+
+    if not nick
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       m.reply "you should specify the username of the twitter to use, or identify using 'twitter authorize'"
       return false
     end
 
+<<<<<<< HEAD
     # use the application-only authentication
     if not @access_token
       @access_token = @app_access_token
@@ -143,11 +213,28 @@ class TwitterPlugin < Plugin
       url = "/1.1/statuses/#{type || 'user'}_timeline.json?count=#{count}&include_rts=true"
     end
     response = @access_token.get(url).body
+=======
+    count = friends ? @bot.config['twitter.friends_status_count'] : @bot.config['twitter.status_count']
+    user = URI.escape(nick)
+    # receive the public timeline per default (this works even without an access_token)
+    uri = "https://api.twitter.com/1/statuses/user_timeline.xml?screen_name=#{user}&count=#{count}&include_rts=true"
+    if @has_oauth and @registry.has_key?(m.sourcenick + "_access_token")
+        if friends
+          #no change to count variable
+          uri = "https://api.twitter.com/1/statuses/friends_timeline.xml?count=#{count}&include_rts=true"
+        end
+        response = @access_token.get(uri).body
+    else
+       response = @bot.httputil.get(uri, :cache => false)
+    end
+    debug response
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     texts = []
 
     if response
       begin
+<<<<<<< HEAD
         tweets = JSON.parse(response)
         if tweets.class == Array
           tweets.each do |tweet|
@@ -166,13 +253,37 @@ class TwitterPlugin < Plugin
           raise 'timeline response: ' + response
         end
         if type
+=======
+        rex = REXML::Document.new(response)
+        rex.root.elements.each("status") { |st|
+          # month, day, hour, min, sec, year = st.elements['created_at'].text.match(/\w+ (\w+) (\d+) (\d+):(\d+):(\d+) \S+ (\d+)/)[1..6]
+          # debug [year, month, day, hour, min, sec].inspect
+          # time = Time.local(year.to_i, month, day.to_i, hour.to_i, min.to_i, sec.to_i)
+          time = Time.parse(st.elements['created_at'].text)
+          now = Time.now
+          # Sometimes, time can be in the future; invert the relation in this case
+          delta = ((time > now) ? time - now : now - time)
+          msg = st.elements['text'].to_s + " (#{Utils.secs_to_string(delta.to_i)} ago via #{st.elements['source'].to_s})"
+          author = ""
+          if friends
+            author = Utils.decode_html_entities(st.elements['user'].elements['name'].text) + ": " rescue ""
+          end
+          texts << author+Utils.decode_html_entities(msg).ircify_html
+        }
+        if friends
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
           # friends always return the latest 20 updates, so we clip the count
           texts[count..-1]=nil
         end
       rescue
         error $!
+<<<<<<< HEAD
         if type
           m.reply "could not parse status for #{nick}'s timeline"
+=======
+        if friends
+          m.reply "could not parse status for #{nick}'s friends"
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         else
           m.reply "could not parse status for #{nick}"
         end
@@ -185,8 +296,13 @@ class TwitterPlugin < Plugin
       end
       return true
     else
+<<<<<<< HEAD
       if type
         rep = "could not get status for #{nick}'s #{type} timeline"
+=======
+      if friends
+        rep = "could not get status for #{nick}'s friends"
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
         rep << ", try asking in private" unless m.private?
       else
         rep = "could not get status for #{nick}"
@@ -208,6 +324,13 @@ class TwitterPlugin < Plugin
 
   def authorize(m, params)
     failed_action = "we can't complete the authorization process"
+<<<<<<< HEAD
+=======
+    unless @has_oauth
+      report_oauth_missing(m, failed_action)
+      return false
+    end
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     #remove all old authorization data
     if @registry.has_key?(m.sourcenick + "_request_token")
@@ -225,7 +348,11 @@ class TwitterPlugin < Plugin
     end
 
     @consumer = OAuth::Consumer.new(key, secret, {
+<<<<<<< HEAD
       :site => URL,
+=======
+      :site => "https://api.twitter.com",
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       :request_token_path => "/oauth/request_token",
       :access_token_path => "/oauth/access_token",
       :authorize_path => "/oauth/authorize"
@@ -258,27 +385,47 @@ class TwitterPlugin < Plugin
 
   # update the status on twitter
   def update_status(m, params)
+<<<<<<< HEAD
+=======
+    unless @has_oauth
+      report_oauth_missing(m, "I cannot update your status")
+      return false
+    end
+
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     unless @registry.has_key?(m.sourcenick + "_access_token")
        m.reply "You must first authorize your Twitter account before tweeting."
        return false;
     end
     @access_token = YAML::load(@registry[m.sourcenick + "_access_token"])
 
+<<<<<<< HEAD
     #uri = URL + '/statuses/update.json'
     status = params[:status].to_s
 
     if status.length > 140
+=======
+    uri = "https://api.twitter.com/statuses/update.json"
+    msg = params[:status].to_s
+
+    if msg.length > 140
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       m.reply "your status message update is too long, please keep it under 140 characters"
       return
     end
 
+<<<<<<< HEAD
     response = @access_token.post('/1.1/statuses/update.json', { :status => status })
+=======
+    response = @access_token.post(uri, { :status => msg })
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     debug response
 
     reply_method = params[:notify] ? :notify : :reply
     if response.class == Net::HTTPOK
       m.__send__(reply_method, "status updated")
     else
+<<<<<<< HEAD
       debug 'twitter update response: ' + response.body
       error = '?'
       begin
@@ -287,6 +434,9 @@ class TwitterPlugin < Plugin
       rescue
       end
       m.__send__(reply_method, "could not update status: #{error}")
+=======
+      m.__send__(reply_method, "could not update status")
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     end
   end
 
@@ -298,7 +448,14 @@ class TwitterPlugin < Plugin
   end
 
   # update on ACTION if the user has enabled the option
+<<<<<<< HEAD
   def ctcp_listen(m)
+=======
+  # Possible TODO: move the has_oauth check further down and alert
+  # the user the first time we do not update because of the missing oauth
+  def ctcp_listen(m)
+    return unless @has_oauth
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     return unless m.action?
     return unless @registry[m.sourcenick + "_actions"]
     update_status(m, :status => m.message, :notify => true)
@@ -331,5 +488,9 @@ plugin.map 'twitter deauthorize', :action => "deauthorize", :public => false
 plugin.map 'twitter pin :pin', :action => "pin", :public => false
 plugin.map 'twitter actions [:toggle]', :action => "actions", :requirements => { :toggle => /^on|off$/ }
 plugin.map 'twitter status [:nick]', :action => "get_status", :threaded => true
+<<<<<<< HEAD
 plugin.map 'twitter :type [status] [:nick]', :action => "get_status", :requirements => { :type => /^(home|mentions|retweets)?$/ }, :threaded => true
 
+=======
+plugin.map 'twitter :friends [status] [:nick]', :action => "get_status", :requirements => { :friends => /^friends?$/ }, :threaded => true
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20

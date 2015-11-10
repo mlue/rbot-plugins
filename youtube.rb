@@ -12,7 +12,11 @@ class YouTubePlugin < Plugin
   YOUTUBE_SEARCH = "http://gdata.youtube.com/feeds/api/videos?vq=%{words}&orderby=relevance"
   YOUTUBE_VIDEO = "http://gdata.youtube.com/feeds/api/videos/%{id}"
 
+<<<<<<< HEAD
   YOUTUBE_VIDEO_URLS = %r{youtube.com/(?:watch\?(?:.*&)?v=|v/)(.*?)(&.*)?$}
+=======
+  YOUTUBE_VIDEO_URLS = %r{youtube.com/(?:watch\?v=|v/)(.*?)(&.*)?$}
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
   Config.register Config::IntegerValue.new('youtube.hits',
     :default => 3,
@@ -24,10 +28,13 @@ class YouTubePlugin < Plugin
     :default => true,
     :desc => "Should the bot display alternative URLs (swf, rstp) for YouTube videos?")
 
+<<<<<<< HEAD
   def help(plugin, topic="")
     'youtube [search] <query> : searches youtube videos | youtube info <id> : returns description and video links'
   end
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   def youtube_filter(s)
     loc = Utils.check_location(s, /youtube\.com/)
     return nil unless loc
@@ -120,7 +127,10 @@ class YouTubePlugin < Plugin
     vids = []
     title = nil
     begin
+<<<<<<< HEAD
 debug s.inspect
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       doc = REXML::Document.new(s[:text])
       title = doc.elements["feed/title"].text
       doc.elements.each("*/entry") { |e|
@@ -153,9 +163,14 @@ debug s.inspect
     debug id
 
     url = YOUTUBE_VIDEO % {:id => id}
+<<<<<<< HEAD
     resp = @bot.httputil.get_response(url)
     xml = resp.body
     unless resp.kind_of? Net::HTTPSuccess
+=======
+    resp, xml = @bot.httputil.get_response(url)
+    unless Net::HTTPSuccess === resp
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       debug("error looking for movie %{id} on youtube: %{e}" % {:id => id, :e => xml})
       return nil
     end
@@ -204,9 +219,14 @@ debug s.inspect
     what = params[:words].to_s
     searchfor = CGI.escape what
     url = YOUTUBE_SEARCH % {:words => searchfor}
+<<<<<<< HEAD
     resp = @bot.httputil.get_response(url)
     xml = resp.body
     unless resp.kind_of? Net::HTTPSuccess
+=======
+    resp, xml = @bot.httputil.get_response(url)
+    unless Net::HTTPSuccess === resp
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
       m.reply(_("error looking for %{what} on youtube: %{e}") % {:what => what, :e => xml})
       return
     end
@@ -242,4 +262,7 @@ plugin = YouTubePlugin.new
 
 plugin.map "youtube info :movie", :action => 'info', :threaded => true
 plugin.map "youtube [search] *words", :action => 'search', :threaded => true
+<<<<<<< HEAD
 
+=======
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
