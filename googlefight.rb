@@ -52,10 +52,17 @@ class GoogleFightPlugin < Plugin
   end
 
   def google_count(query)
+<<<<<<< HEAD
     url  = 'http://www.google.com/search?hl=en&safe=off&btnG=Search&q=' << CGI.escape(query)
     html = Net::HTTP.get(URI.parse((url)))
     res  = html.scan(%r{About ([\d,]+) results})
     res[0][0].to_s.tr(",", "").to_i
+=======
+    url  = 'http://www.google.com/search?client=safari&rls=en&ie=UTF-8&oe=UTF-8&q='+CGI.escape(query)
+    html = Net::HTTP.get(URI.parse((url)))
+    res  = html.scan(/>About ([\d,]+) results<nobr>/i)
+    res.flatten.first.tr(",","").to_i
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 end
 

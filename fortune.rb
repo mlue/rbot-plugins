@@ -48,10 +48,14 @@ class FortunePlugin < Plugin
   ## Pick a fortune
   def fortune(m, params)
     fortune = find_fortune(m)
+<<<<<<< HEAD
     if not fortune or fortune.empty?
       m.reply "fortune executable not found (try setting the 'fortune.path' variable)"
       return
     end
+=======
+    m.reply "fortune executable not found (try setting the 'fortune.path' variable)" unless fortune
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     command = [fortune] + @bot.config['fortune.options']
     command << params[:db]
@@ -85,10 +89,14 @@ class FortunePlugin < Plugin
   # Print the fortune categories
   def categories(m, params)
     fortune = find_fortune(m)
+<<<<<<< HEAD
     if not fortune or fortune.empty?
       m.reply "fortune executable not found (try setting the 'fortune.path' variable)"
       return
     end
+=======
+    m.reply "fortune executable not found (try setting the 'fortune.path' variable)" unless fortune
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 
     ## list all fortune databases
     categories = Utils.safe_exec(fortune, "-f").split(/\n+ */).map{ |f|

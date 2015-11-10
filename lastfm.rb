@@ -169,7 +169,6 @@ class LastFmPlugin < Plugin
       venue.street  = v.elements["location/street"].get_text.value
       venue.postal  = v.elements["location/postalcode"].get_text.value
       venue.country = v.elements["location/country"].get_text.value
-
       results << venue
     end
     results
@@ -792,5 +791,5 @@ plugin.map 'lastfm [user] [:num] :action [:user] over [*period]', :thread => tru
     :period => /^(?:(?:3|6|12) months)|(?:a\s|1\s)?year$/,
     :num => /^\d+$/
 }
-plugin.map 'lastfm [now] [:who]', :action => :now_playing
-plugin.map 'np [:who]', :action => :now_playing
+plugin.map 'lastfm [now] [:who]', :action => :now_playing, :thread => true
+plugin.map 'np [:who]', :action => :now_playing, :thread => true

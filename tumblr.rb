@@ -19,10 +19,19 @@ require 'cgi'
 
 class TumblrPlugin < Plugin
   RBOT = CGI.escape("rbot #{$version.split.first}")
+<<<<<<< HEAD
   WRITE_URL = "http://www.tumblr.com/api/write"
   REBLOG_URL = "http://www.tumblr.com/api/reblog"
   READ_URL = "http://%{user}.tumblr.com/api/read?id=%{id}"
   LOGIN = "email=%{email}&password=%{pwd}&group=%{group}&format=markdown&generator=" + RBOT
+=======
+  #WRITE_URL = "https://www.tumblr.com/api/write"
+  WRITE_URL = "/v2/blog/%{group}/post"
+  REBLOG_URL = "http://www.tumblr.com/api/reblog"
+  READ_URL = "http://%{user}.tumblr.com/api/read?id=%{id}"
+  #LOGIN = "email=%{email}&password=%{pwd}&group=%{group}&format=markdown&generator=" + RBOT
+  LOGIN = "format=markdown&generator=" + RBOT
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   PHOTO = "&type=photo&source=%{src}&click-through-url=%{src}"
   VIDEO = "&type=video&embed=%{src}"
   CAPTION = "&caption=%{desc}"
@@ -58,10 +67,18 @@ class TumblrPlugin < Plugin
     end
     html_line = line ? CGI.escapeHTML(line) : line
     tags = line ? line.scan(/\[([^\]]+)\]/).flatten : []
+<<<<<<< HEAD
 
     req = LOGIN % account
     ready = false
     api_url = WRITE_URL
+=======
+    tags << options[:nick].tr('_','')
+
+    req = LOGIN % account
+    ready = false
+    api_url = WRITE_URL % account
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     tumblr = options[:htmlinfo][:headers]['x-tumblr-user'].to_s rescue nil
     if tumblr
       id = url.match(/\/post\/(\d+)/)
@@ -115,10 +132,28 @@ class TumblrPlugin < Plugin
         :name => CGI.escape(line)
       })
     end
+<<<<<<< HEAD
 
     debug "posting #{req.inspect}"
     resp  = @bot.httputil.post(api_url, req)
     debug "tumblr response: #{resp.inspect}"
+=======
+    require 'oauth'
+    consumer = OAuth::Consumer.new 'rbjIVkw874cjXOkrzXWBJWk51Y4nfMljQy0M1K3HzdwsbpiRNi','1S42F0uvg0T9WL8fdlYEoHK005OrRIvDoPJ70jjQVnm3L9dHI1', :site => "http://api.tumblr.com"
+    access = OAuth::AccessToken.new consumer, 'TDHVtsK5EI1hBcbuRa1ufGZWYs4vkCkD4JgNr26d9zpl5Cd5es','wcy5sgYEXtq5of8KikvPfaNQ7cQ5wJxEcE5O9AMsxgWLHFdKsO'
+    debug "posting #{req.inspect}"
+    
+    quesy_hash={}
+    for str in req.split("&")
+      s= str.split("=")
+      quesy_hash[s[0]]= CGI.unescape(s[1])
+    end
+
+    resp  = access.post api_url,quesy_hash
+    #resp  = @bot.httputil.post(api_url, req)
+    debug "tumblr response: #{resp.inspect}"
+    debug "tumblr body: #{resp.body}"
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
   end
 
   def configuration(m, params={})
@@ -188,5 +223,9 @@ plugin.map 'tumblr configure [:channel]', :action => :configuration
 plugin.map 'tumblr deconfigure [:channel]', :action => :deconfigure
 plugin.map 'tumblr configure [:channel] :email :pwd [:group]',
   :action => :configure,
+<<<<<<< HEAD
   :requirements => {:channel => Regexp::Irc::GEN_CHAN, :email => /\S+@\S+/, :group => /[A-Za-z\-.]+/}
+=======
+  :requirements => {:channel => Regexp::Irc::GEN_CHAN, :email => /[A-Z0-9\._%-]+@[A-Z0-9\.-]+\.[A-Z]{2,4}/i, :group => /[A-Za-z\d-]+/}
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# -*- coding: utf-8 -*-
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
 #-- vim:sw=2:et
 #++
 #
@@ -102,6 +106,11 @@ class WeatherPlugin < Plugin
   end
 
   def weather(m, params)
+<<<<<<< HEAD
+=======
+    m.reply "Please make weather queries privately." and return unless m.private?
+    
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     where = params[:where].to_s
     service = params[:service].to_sym rescue nil
     units = params[:units]
@@ -130,9 +139,13 @@ class WeatherPlugin < Plugin
 
     wu_units = String.new
 
+<<<<<<< HEAD
     units = @bot.config['weather.units'] unless units
 
     case units.to_sym
+=======
+    case (units || @bot.config['weather.units']).to_sym
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     when :english, :metric
       wu_units = "_#{units}"
     when :both
@@ -295,7 +308,11 @@ class WeatherPlugin < Plugin
       next if vv.empty?
       next if ["-", "- approx.", "N/A", "N/A approx."].include?(vv)
       next if kk == "Raw METAR"
+<<<<<<< HEAD
       result << ("%s: %s" % [kk, vv])
+=======
+      result << ("%s: %s" % [kk.ircify_html, vv.ircify_html])
+>>>>>>> 81d3f215b2afb2d65832632ff9299032d429fe20
     }
     return result.join('; ')
   end
