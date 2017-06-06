@@ -61,7 +61,7 @@ class EricPlugin < Plugin
       warning e.backtrace.join("\n")
       answer = "failed"
     end while answer.to_s.empty? && x < 20
-    m.reply answer
+    m.reply answer.gsub(/\-?\s*Wikipedia$/i,'')
   end
 end
 

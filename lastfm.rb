@@ -273,7 +273,9 @@ class LastFmPlugin < Plugin
     opts = { :cache => false }
     user1 = resolve_username(m, params[:user1])
     user2 = resolve_username(m, params[:user2])
-    xml = @bot.httputil.get_response("#{APIURL}method=tasteometer.compare&type1=user&type2=user&value1=#{CGI.escape user1}&value2=#{CGI.escape user2}", opts)
+    xml = @bot.httputil.get_response("#{APIURL}method=tasteometer.compare&type1=&type2=user&value1=#{CGI.escape user1}&value2=#{CGI.escape user2}", opts)
+    debug "#{APIURL}method=tasteometer.compare&type1=&type2=user&value1=#{CGI.escape user1}&value2=#{CGI.escape user2}"
+    debug xml.inspect
     doc = Document.new xml.body
     unless doc
       m.reply _("last.fm parsing failed")

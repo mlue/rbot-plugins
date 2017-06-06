@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'treat'
+
 #-- vim:sw=2:et
 #++
 #
@@ -10,6 +13,7 @@
 # by listening to chat
 
 class MarkovPlugin < Plugin
+  include Treat::Core::DSL
   Config.register Config::BooleanValue.new('markov.enabled',
     :default => false,
     :desc => "Enable and disable the plugin")
@@ -43,7 +47,17 @@ class MarkovPlugin < Plugin
     :default => [],
     :desc => "Ignore these word patterns")
 
-  MARKER = :"\r\n"
+   MARKER = :"\r\n"
+
+  #PATTERN = [["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
+
+  PATTERN = [["PRP", "VBP", "DT", "NN"], ["PRP", "VBP", "NN"],  ["VB", "RB"], ["RB", "PRP", "MD", "VB"], ["NN"], ["VBP", "PRP", "CD"], ["DT", "NN", "CC", "DT", "NN", "VBZ", "NN"], ["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
+            
+  HPATTERN = [["PRP", "VBP", "VBG", "NN"], ["PRP", "VBP", "JJ"], ["RB", "PRP", "MD", "VB"]]
+
+  QPATTERN = [["RB", "PRP", "VBP", "RB"], ["PRP", "VBP", "RB"], ["IN", "FW"], ["PRP", "VB", "RB", "TO", "PRP"]]
+
+  APATTERN = [["PRP", "VBP", "RB"]]
 
   # upgrade a registry entry from 0.9.14 and earlier, converting the Arrays
   # into Hashes of weights
@@ -536,32 +550,75 @@ class MarkovPlugin < Plugin
   end
 
   def random_markov(m, message)
-    return unless should_talk(m)
+    begin
+      debug "chat call #{m.inspect} #{message.inspect}"
+      return unless should_talk(m)
 
-    words = clean_message(m).split(/\s+/)
-    if words.length < 2
-      line = generate_string words.first, nil
-
-      if line and message.index(line) != 0
-        reply_delay m, line
-        return
-      end
-    else
-      pairs = seq_pairs(words).sort_by { rand }
-      pairs.each do |word1, word2|
-        line = generate_string(word1, word2)
+      attempts = 500
+      words = clean_message(m).split(/\s+/)
+      
+      if words.length < 2
+        
+        line = generate_string words.first, nil
+        
         if line and message.index(line) != 0
           reply_delay m, line
           return
         end
-      end
-      words.sort_by { rand }.each do |word|
-        line = generate_string word.first, nil
-        if line and message.index(line) != 0
-          reply_delay m, line
-          return
+      else
+        w_o = clean_message(m).gsub(/gbp:/,'').strip
+        pat = case
+              when Regexp.union(/^do/i,/^will/i,/^how/i, /^what/i).match(w_o)
+                QPATTERN
+              when Regexp.union(/^are/i).match(w_o)
+                QPATTERN
+              when Regexp.union(/^how/).match(w_o)
+                HPATTERN
+              else
+                PATTERN
+              end
+
+        pairs = seq_pairs(words).sort_by { rand }
+        #seq_pairs(words.reject{|f| Regexp.union(/^are/i,/^do.*/i,/^will/i,/^what/i).match(f)}).sort_by { rand }
+        pairs.each do |word1, word2|
+          line = generate_string(word1, word2)
+          sent = sentence(line)
+          v = sent.apply(:tokenize,:tag).words.map(&:tag)
+          attempt = 0
+          until ( pat.include?(v) || attempt > attempts )
+            attempt += 1
+            line = generate_string(word1, word2)
+            sent = sentence(line)
+            v = sent.apply(:tokenize,:tag).words.map(&:tag)
+            debug "checking #{line} against #{pat.size} for #{w_o}"
+          end
+          if line# and message.index(line) != 0
+            debug "#{v.inspect} selected"
+            reply_delay m, line
+            return
+          end
+        end
+        words.sort_by { rand }.each do |word|
+          line = generate_string word.first, nil
+          sent = sentence(line)
+          v = sent.apply(:tokenize,:tag).words.map(&:tag)
+          attempt = 0
+          until pat.include?(sent.apply(:tokenize,:tag).words.map(&:tag)) || attempt > attempts
+            attempt += 1
+            line = generate_string(word.first, nil)
+            sent = sentence(line)
+            v = sent.apply(:tokenize,:tag).words.map(&:tag)
+            debug "checking #{line} against #{pat.size} for #{w_o}"
+          end
+          if line#and message.index(line) != 0
+            debug "#{v.inspect} selected"
+            reply_delay m, line
+            return
+          end
         end
       end
+    rescue
+      debug "#{$@}"
     end
   end
 
@@ -575,6 +632,7 @@ class MarkovPlugin < Plugin
   end
 
   def rand_chat(m, params)
+        debug "chat call #{m.inspect}#{params.inspect}"
     # pick a random pair from the db and go from there
     word1, word2 = MARKER, MARKER
     output = Array.new
