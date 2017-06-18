@@ -51,8 +51,10 @@ class MarkovPlugin < Plugin
 
   #PATTERN = [["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
 
-  PATTERN = [["PRP", "VBP", "DT", "NN"], ["PRP", "VBP", "NN"],  ["VB", "RB"], ["RB", "PRP", "MD", "VB"], ["NN"], ["VBP", "PRP", "CD"], ["DT", "NN", "CC", "DT", "NN", "VBZ", "NN"], ["PRP", "VBP", "JJ"],["IN", "PRP", "VBP", "JJ", "VBP", "DT", "NN"],["JJ", "DT", "NN", "VB"],["NNP", "RB", "NN", "PRP", "VBP", "TO", "VB", "PRP", "NN"], ["NNP", "PRP", "VBP", "PRP", "VBD", "DT", "NN", "IN", "NN"], ["VB", "NN"], ["PRP", "JJ", "CC", "JJ"], ["JJ"], ["NN", "IN", "NN"], ["VB", "VB", "JJ"],["FW", "NN", "WRB", "PRP", "VBD", "JJ"], ["FW", "NN"],["VB", "DT", "NN"], ["FW", "FW", "VBP", "PRP"]]
-            
+  PATTERN = [["PRP", "VBP", "NNP", "NN", "NNP", "PRP$", "JJ", "NN", "NN"], ["NNP", "PRP", "NNS", "VBP", "IN"], ["NNP"], ["NNP", "IN", "IN", "PRP", "VBD", "DT", "NN"], ["EX", "VBZ", "DT", "JJ", "NN", "RB"], ["RB", "PRP", "VBP", "DT", "RB", "JJ"], ["WP", "PRP$", "NN", "FW"], ["NN", "FW"], ["JJ"], ["PRP", "MD", "PRP", "DT", "IN", "PRP", "VBG", "NN"], ["PRP", "PRP", "IN", "PRP$", "NNS", "VBP", "VBG", "FW"], ["VBD", "PRP", "PRP", "PRP", "FW", "JJ", "FW", "FW"], ["PRP", "RB", "NN", "IN", "FW"], ["PRP", "VBP", "IN", "DT", "JJ", "NN"], ["NNP", "DT", "FW"], ["WP", "VBP", "PRP", "VBD", "RB", "DT", "JJ", "NN"], ["NNP", "NNP"], ["PRP", "RB", "FW"], ["PRP", "VBN", "PRP$", "NN"], ["PRP", "VBN", "PRP$", "NNS"], ["PRP", "MD", "RB", "VB"], ["PRP", "MD", "VB", "IN", "DT", "NNS"], ["NNP", "PRP", "VBP", "PRP$", "NN", "NN"], ["NNP", "PRP", "VBP", "PRP$", "JJ", "NN", "NN"], ["WP", "PRP$", "NN"], ["NNP", "VBP", "PRP", "RB", "JJ"], ["MD", "PRP", "VB", "IN", "NN", "IN", "DT", "NN"], ["NNP", "PRP", "VBD", "RB"], ["NNP", "PRP", "JJ"], ["NNP", "NNP", "VB", "PRP", "JJ"], ["NNP", "WP"], ["VB", "PRP", "IN", "TO", "VB", "PRP", "DT", "FW"], ["PRP", "VBD", "VB", "PRP", "VBN", "FW", "IN", "JJ"], ["NNP", "FW"], ["RB", "VBZ", "CC", "NNS", "VBP", "IN", "NNP", "NNP", "NN"], ["NNP", "PRP", "DT", "NN"], ["VBD", "PRP$", "NNS", "VBP", "DT", "NNS", "IN", "VBN"], ["NNP", "PRP", "FW", "NNS"], ["PRP", "VBP", "IN", "DT", "NN", "NNP"], ["RB", "NNS", "CC", "NNS", "VBP", "VBN", "NNP"], ["IN", "RB", "IN", "PRP", "NNP", "NNP"], ["NNP", "PRP", "VBP", "PRP", "JJ", "NNP", "NNP"], ["NNP", "PRP", "VBP", "PRP", "JJ"], ["VB", "IN", "JJ", "FW", "IN", "PRP$", "NN"], ["NNP", "DT", "JJ", "NN", "NN"], ["CD"], ["VB", "IN", "PRP$", "NNS", "FW"], ["NNP", "PRP", "IN", "VBG"], ["CC", "PRP", "MD", "RB", "FW", "FW", "IN"], ["NNP", "CC", "NN", "VBD", "VBG", "IN", "NN"], ["NNP", "VBD", "IN", "DT", "VBZ", "WP", "PRP", "VBD"], ["UH", "FW", "FW", "DT"], ["NN"], ["NNP", "NNP", "NNP", "VBZ", "DT", "NN"], ["NNP", "DT", "NNS", "NNS", "CC", "DT", "NN"], ["NNP", "FW", "IN", "PRP", "RB", "NNP"], ["PRP", "NNS", "MD", "VB", "IN", "PRP$", "NNS"], ["PRP", "MD", "VB", "PRP$", "FW", "DT", "NN", "NN"], ["DT", "VBZ", "PRP$", "FW"], ["NNP", "FW", "VBZ", "PRP$", "JJS", "NN"], ["PRP", "VBZ", "PRP$", "NN"], ["NNP", "NN", "NNS"], ["DT", "VBZ", "PRP$", "NN"], ["DT", "VBZ", "IN", "VBG"], ["DT", "VBZ", "IN", "NN"], ["VB", "PRP$", "NNS", "IN", "RB"], ["PRP", "VBP", "DT", "JJ", "NN", "IN", "FW"], ["VB", "IN", "IN", "PRP$", "NN"], ["PRP", "VB", "NNS", "IN", "JJ", "NNS", "FW"], ["NNP", "PRP", "VBP", "IN"], ["WDT", "PRP", "VBP", "VBP", "VB", "RB"], ["DT", "MD", "VB", "PRP$", "JJ", "NN"], ["RB", "VB", "PRP", "JJ", "JJ", "NN", "NN", "IN", "FW"], ["NNP", "PRP", "VBG", "TO", "JJ", "NN", "NNP"], ["NNP", "PRP", "RB"], ["VB", "PRP", "RB"], ["NNP", "PRP", "VBP", "FW"], ["NNP", "PRP", "VBP", "JJ"], ["NNP", "PRP", "VBP", "PRP", "VBN", "DT", "NN"], ["NNP", "PRP$", "NNS", "CC", "NN", "PRP$", "NNS"], ["WRB", "PRP", "RB", "FW"], ["PRP", "VBP", "PRP", "VBP", "TO", "FW"], ["PRP", "VB", "PRP", "NN"], ["PRP", "VB", "PRP", "WRB", "TO", "FW"], ["RB", "PRP", "NNS", "VBP", "IN"], ["PRP$", "FW", "VBZ", "RB", "DT", "NN"], ["PRP", "VBZ", "DT", "JJ", "NN", "IN", "VBZ"], ["PRP", "VBP", "VBG", "IN", "NNP", "NNP"], ["VBZ", "PRP", "VBP", "RB", "WP", "PRP", "VBP"], ["CD", "CD", "CD", "CD"], ["PRP", "VBP", "DT", "NNP", "NNP"], ["PRP", "VBP", "VB", "CC", "PRP", "VBN", "VBN"], ["NNP", "FW", "VBZ", "JJ", "NN"], ["NN", "IN", "FW"], ["IN", "PRP", "VBP", "DT", "JJ", "FW", "NNP", "NNP"], ["RB", "VB", "IN", "PRP$", "NNS"], ["NN", "VBZ", "PRP", "RB"], ["PRP", "RB", "VB", "VBG", "NNS", "VBG", "NN", "IN", "NN"], ["PRP", "MD", "VB", "NN", "NN"], ["PRP", "VBP", "NN"], ["PRP", "RB", "VBG"], ["NNP", "PRP", "VBP", "PRP$", "JJ", "NNP", "NNS"], ["NNP", "FW", "VBP", "CC", "VB"], ["NNP", "FW", "FW", "FW", "FW", "FW"], ["WP", "VBZ", "DT", "NN", "VB"], ["NNP", "NN", "NN"], ["WP", "VBP", "PRP", "VBP", "IN", "DT", "NN", "NNS"], ["VB", "VB", "VB"], ["PRP", "VBZ", "PRP$", "NNS", "PRP", "VBP", "JJ"], ["NNP", "VBD", "RB", "IN", "DT", "NNP", "NNP"], ["PRP", "VBP", "TO", "VB", "PRP$", "FW", "IN", "PRP$", "NN"], ["WP", "PRP", "VBP", "IN", "NN"], ["PRP", "VBP", "RB", "VBN", "RB", "JJ"], ["PRP", "VBP", "VB", "DT", "JJ", "NN"], ["PRP", "RB", "VB", "PRP$"], ["NNP", "PRP", "NNS", "VBP", "DT", "RB", "NNS"], ["NNP", "PRP", "VBP", "NNS"], ["NNP", "PRP", "RB", "DT", "NN", "PRP", "DT", "NN"], ["JJ", "FW", "JJ", "NN", "NN"], ["PRP", "VBP"], ["IN", "DT", "NN"], ["IN", "FW"], ["WP", "VBZ", "DT", "NNP", "NNP", "FW"], ["WP", "IN", "DT", "NN", "IN", "NNP", "NNP"], ["NNP", "VBP", "PRP", "NNS", "VBG", "IN", "PRP$", "NN"], ["WP", "VBZ", "PRP$", "JJ", "NN", "NNS"], ["NNP", "NN", "PRP", "RB", "FW"], ["PRP", "VBP", "PRP", "RB", "NN"], ["PRP", "NN"], ["DT", "PRP", "FW", "FW"], ["PRP", "JJ"], ["PRP", "VBP", "PRP", "RB", "JJ"], ["NNP", "JJ", "PRP", "RB", "FW", "DT", "NNS", "IN", "NN"], ["VB", "PRP", "DT", "JJ", "NN", "NN"], ["PRP", "VBP", "VBG", "JJ", "TO", "NN", "NN"], ["PRP", "VBD", "FW", "VBP", "RB", "IN", "DT", "FW"], ["RB", "VB", "IN", "NNS"], ["VB", "FW", "CC", "VB", "PRP", "VBG", "JJ"], ["PRP", "VBG", "FW"], ["NNP", "DT", "NN"], ["CC", "FW", "NN", "NNS", "RB"], ["PRP", "DT", "JJ"], ["PRP", "VBG", "TO", "VB", "PRP", "DT", "JJ", "FW"], ["PRP", "VBP", "DT", "NN"], ["NNP", "PRP", "VBP", "DT", "NN"], ["DT", "VBP", "JJ", "NNS", "PRP", "VBG", "NNS"], ["PRP", "VBD", "FW", "RRB", "IN", "FW", "NNS", "DT", "NN"], ["NNP", "NN", "JJ", "FW"], ["PRP", "DT", "JJ", "FW", "RB"], ["NNP", "PRP", "VBP", "NN", "NN", "FW"], ["UH", "DT", "IN", "PRP", "NNS", "VBP", "NN", "NN", "FW"], ["UH", "PRP", "RB", "FW"], ["PRP", "MD", "RB", "VB", "DT", "NN", "IN", "NN"], ["UH"], ["PRP", "VBP", "FW"], ["NNP", "NN"], ["VBN", "IN"], ["PRP", "VBP", "PRP", "JJ"], ["JJ", "JJ", "NN"], ["CD", "FW"], ["NNP", "VB", "VBN"], ["UH", "WP", "DT", "NN", "FW"], ["PRP", "VBP", "NN", "FW", "FW", "NN"], ["UH", "NN"], ["UH", "RB", "RB", "IN", "JJ", "NN"], ["NNP", "VB", "IN", "DT", "NN", "CC", "PRP$", "NN"], ["UH", "UH"], ["PRP", "MD", "VB", "JJ"], ["PRP", "VB", "DT", "FW"], ["PRP", "MD", "FW", "FW", "NN"], ["PRP", "PRP$", "JJ", "FW"], ["NNP", "NNP", "JJ"], ["NNP", "NNP", "DT", "NN"], ["DT", "JJR", "NN", "IN", "DT", "NN"], ["EX", "NN", "PRP", "MD", "VB", "IN", "PRP$"], ["PRP", "JJ", "NN"], ["NNP", "VB", "DT", "FW", "FW", "FW"], ["NNP", "PRP", "NN"], ["NNP", "JJ", "NN"]]
+
+
+
   HPATTERN = [["PRP", "VBP", "VBG", "NN"], ["PRP", "VBP", "JJ"], ["RB", "PRP", "MD", "VB"]]
 
   QPATTERN = [["RB", "PRP", "VBP", "RB"], ["PRP", "VBP", "RB"], ["IN", "FW"], ["PRP", "VB", "RB", "TO", "PRP"]]
@@ -554,13 +556,13 @@ class MarkovPlugin < Plugin
       debug "chat call #{m.inspect} #{message.inspect}"
       return unless should_talk(m)
 
-      attempts = 500
+      attempts = 200
       words = clean_message(m).split(/\s+/)
-      
+
       if words.length < 2
-        
+
         line = generate_string words.first, nil
-        
+
         if line and message.index(line) != 0
           reply_delay m, line
           return
@@ -585,17 +587,17 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until ( pat.include?(v) || attempt > attempts )
+          until (  attempt > attempts )
             attempt += 1
             line = generate_string(word1, word2)
             sent = sentence(line)
             v = sent.apply(:tokenize,:tag).words.map(&:tag)
             debug "checking #{line} against #{pat.size} for #{w_o}"
-          end
-          if line# and message.index(line) != 0
-            debug "#{v.inspect} selected"
-            reply_delay m, line
-            return
+            if pat.include?(v) # and message.index(line) != 0
+              debug "#{v.inspect} selected"
+              reply_delay m, line
+              return
+            end
           end
         end
         words.sort_by { rand }.each do |word|
@@ -603,17 +605,17 @@ class MarkovPlugin < Plugin
           sent = sentence(line)
           v = sent.apply(:tokenize,:tag).words.map(&:tag)
           attempt = 0
-          until pat.include?(sent.apply(:tokenize,:tag).words.map(&:tag)) || attempt > attempts
+          until attempt > attempts
             attempt += 1
             line = generate_string(word.first, nil)
             sent = sentence(line)
             v = sent.apply(:tokenize,:tag).words.map(&:tag)
             debug "checking #{line} against #{pat.size} for #{w_o}"
-          end
-          if line#and message.index(line) != 0
-            debug "#{v.inspect} selected"
-            reply_delay m, line
-            return
+            if pat.include?(sent.apply(:tokenize,:tag).words.map(&:tag))#and message.index(line) != 0
+              debug "#{v.inspect} selected"
+              reply_delay m, line
+              return
+            end
           end
         end
       end
@@ -800,7 +802,7 @@ plugin.map 'markov disable', :action => "disable"
 plugin.map 'markov status', :action => "status"
 plugin.map 'markov stats', :action => "stats"
 plugin.map 'chat about :seed1 [:seed2]', :action => "chat"
-plugin.map 'chat', :action => "rand_chat"
+#plugin.map 'chat', :action => "rand_chat"
 plugin.map 'markov probability [:probability]', :action => "probability",
            :requirements => {:probability => /^\d+%?$/}
 plugin.map 'markov learn from :file [:testing [:lines lines]] [using pattern *pattern]', :action => "learn_from", :thread => true,
@@ -811,4 +813,3 @@ plugin.map 'markov learn from :file [:testing [:lines lines]] [using pattern *pa
 plugin.default_auth('ignore', false)
 plugin.default_auth('probability', false)
 plugin.default_auth('learn', false)
-
